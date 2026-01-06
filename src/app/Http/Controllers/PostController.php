@@ -18,9 +18,12 @@ class PostController extends Controller
     {
         $query = Post::with(['user', 'tags', 'likers']);
 
-        // キーワード検索
+        // キーワード検索（タイトル＋本文）
         if ($request->filled('keyword')) {
-            $query->where('content', 'like', "%{$request->keyword}%");
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', "%{$request->keyword}%")
+                  ->orWhere('content', 'like', "%{$request->keyword}%");
+            });
         }
 
         // 23区の定義
@@ -35,32 +38,35 @@ class PostController extends Controller
             $area = $request->area;
 
             if ($area === 'tokyo23') {
-                $query->whereHas('user', fn($q) => $q->whereIn('area', $tokyo23));
+                $query->whereHas('user', fn ($q) => $q->whereIn('area', $tokyo23));
             } elseif ($area === 'outside23') {
-                $query->whereHas('user', fn($q) => $q->whereNotIn('area', $tokyo23));
+                $query->whereHas('user', fn ($q) => $q->whereNotIn('area', $tokyo23));
             } else {
-                $query->whereHas('user', fn($q) => $q->where('area', $area));
+                $query->whereHas('user', fn ($q) => $q->where('area', $area));
             }
         }
 
         // タグ検索
         if ($request->filled('tag')) {
-            $query->whereHas('tags', fn($q) => $q->where('name', 'like', "%{$request->tag}%"));
+            $query->whereHas('tags', fn ($q) =>
+                $q->where('name', 'like', "%{$request->tag}%")
+            );
         }
 
         // 最新順
-        $posts = $query->orderBy('created_at','desc')
-            ->paginate(10)->withQueryString();
+        $posts = $query
+            ->orderByDesc('created_at')
+            ->paginate(10)
+            ->withQueryString();
 
         return view('posts.index', compact('posts'));
     }
 
     /**
-     * 投稿詳細（コメント表示）
+     * 投稿詳細
      */
     public function show(Post $post)
     {
-        // コメントも取得
         $post->load(['user', 'tags', 'comments.user']);
 
         return view('posts.show', compact('post'));
@@ -75,7 +81,7 @@ class PostController extends Controller
     }
 
     /**
-     * 投稿保存（タグ反映 ＋ IMEゴミ文字対策）
+     * 投稿保存（★完全修正版）
      */
     public function store(StorePostRequest $request)
     {
@@ -86,9 +92,10 @@ class PostController extends Controller
             ? $request->file('image')->store('posts', 'public')
             : null;
 
-        // 投稿作成
+        // 投稿作成（title を必ず保存）
         $post = Post::create([
             'user_id' => Auth::id(),
+            'title'   => $validated['title'],
             'content' => $validated['content'],
             'image'   => $imagePath,
         ]);
@@ -102,7 +109,6 @@ class PostController extends Controller
             $tagIds = [];
 
             foreach ($rawTags as $tagName) {
-
                 $tagName = trim($tagName);
 
                 if (mb_strlen($tagName) <= 1) continue;
@@ -112,12 +118,14 @@ class PostController extends Controller
                 $tagIds[] = $tag->id;
             }
 
-            if (!empty($tagIds)) {
+            if ($tagIds) {
                 $post->tags()->sync($tagIds);
             }
         }
 
-        return redirect()->route('posts.index')->with('success', '投稿しました！');
+        return redirect()
+            ->route('posts.index')
+            ->with('success', '投稿しました！');
     }
 
     /**
@@ -125,12 +133,12 @@ class PostController extends Controller
      */
     public function like(Post $post)
     {
-        $post->likers()->syncWithoutDetaching([Auth::id()]);
+        $post->likers()->syncWithoutDetaching(Auth::id());
 
         return response()->json([
-            'status'=>'success',
-            'liked'=>true,
-            'count'=>$post->likers()->count(),
+            'status' => 'success',
+            'liked'  => true,
+            'count'  => $post->likers()->count(),
         ]);
     }
 
@@ -142,9 +150,9 @@ class PostController extends Controller
         $post->likers()->detach(Auth::id());
 
         return response()->json([
-            'status'=>'success',
-            'liked'=>false,
-            'count'=>$post->likers()->count(),
+            'status' => 'success',
+            'liked'  => false,
+            'count'  => $post->likers()->count(),
         ]);
     }
 
@@ -157,18 +165,16 @@ class PostController extends Controller
             abort(403, '権限なし');
         }
 
-        if ($post->image) {
-            $imagePath = 'posts/' . basename($post->image);
-            if (Storage::disk('public')->exists($imagePath)) {
-                Storage::disk('public')->delete($imagePath);
-            }
+        if ($post->image && Storage::disk('public')->exists($post->image)) {
+            Storage::disk('public')->delete($post->image);
         }
 
         $post->tags()->detach();
         $post->likers()->detach();
         $post->delete();
 
-        return redirect()->route('posts.index')->with('success', '投稿を削除しました');
+        return redirect()
+            ->route('posts.index')
+            ->with('success', '投稿を削除しました');
     }
 }
-

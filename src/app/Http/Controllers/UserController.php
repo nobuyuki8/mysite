@@ -13,6 +13,7 @@ class UserController extends Controller
      */
     public function show(User $user): View
     {
+    
         // ================= 通常の投稿一覧（タグ付き） =================
         $posts = $user->posts()
             ->with('tags')

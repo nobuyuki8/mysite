@@ -12,7 +12,6 @@ class StorePostRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // 認証済みユーザーなら OK
         return Auth::check();
     }
 
@@ -22,6 +21,13 @@ class StorePostRequest extends FormRequest
     public function rules(): array
     {
         return [
+            // ★ タイトルを追加
+            'title' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
             'content' => [
                 'required',
                 'string',
@@ -35,7 +41,7 @@ class StorePostRequest extends FormRequest
                 'max:2048',
             ],
 
-            // タグ入力（カンマ・スペース区切りの文字列）
+            // タグ入力
             'tags' => [
                 'nullable',
                 'string',
@@ -50,6 +56,9 @@ class StorePostRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'title.required' => 'タイトルは必須です。',
+            'title.max' => 'タイトルは255文字以内で入力してください。',
+
             'content.required' => '投稿内容は必須です。',
             'content.max' => '投稿内容は500文字以内で入力してください。',
 
@@ -66,10 +75,6 @@ class StorePostRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         if ($this->has('tags')) {
-
-            // 連続スペースを 1 つに
-            // 前後の空白除去
-            // 全角スペースも処理
             $clean = preg_replace('/\s+/u', ' ', $this->tags ?? '');
 
             $this->merge([

@@ -12,8 +12,13 @@ class Post extends Model
 {
     use HasFactory;
 
+    /**
+     * 一括代入可能カラム
+     */
     protected $fillable = [
         'user_id',
+        'post_type',
+        'title',    // ★ これが無いと title は保存されない
         'content',
         'image',
         'area',
@@ -33,10 +38,10 @@ class Post extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(
-            Tag::class,     // 関連先モデル
-            'post_tag',     // 中間テーブル
-            'post_id',      // このモデル側の外部キー
-            'tag_id'        // Tagモデル側
+            Tag::class,
+            'post_tag',
+            'post_id',
+            'tag_id'
         )->withTimestamps();
     }
 
@@ -49,15 +54,17 @@ class Post extends Model
     }
 
     /**
-     * いいねしたユーザー一覧（多対多）
+     * いいねしたユーザー（多対多）
      */
     public function likers(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'likes')->withTimestamps();
+        return $this->belongsToMany(User::class, 'likes')
+            ->withTimestamps();
     }
 
     /**
-     * いいね数を取得（アクセサ）
+     * いいね数アクセサ
+     * $post->likes_count
      */
     public function getLikesCountAttribute(): int
     {
@@ -65,7 +72,7 @@ class Post extends Model
     }
 
     /**
-     * ログインユーザーがいいねしているか？
+     * 指定ユーザーがいいねしているか
      */
     public function isLikedByUser(?int $userId): bool
     {
@@ -78,4 +85,3 @@ class Post extends Model
             ->exists();
     }
 }
-

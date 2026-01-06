@@ -23,8 +23,7 @@ class Exchange extends Model
         'desired_crop_name',
         'area',
         'status',
-        'message',
-        'image_path',      // ← ★画像カラム（必須）
+        'image_path',     // ★ 画像保存用
         'completed_at',
     ];
 
@@ -44,7 +43,7 @@ class Exchange extends Model
     }
 
     /**
-     * 申請者（交換相手）
+     * 交換相手（受信者）
      */
     public function receiver()
     {
@@ -62,16 +61,16 @@ class Exchange extends Model
     /**
      * この交換に紐づくチャットルーム
      */
-    public function chatRooms()
+    public function rooms()
     {
-        return $this->hasMany(ChatRoom::class);
+        return $this->hasMany(Room::class);
     }
 
     /**
-     * 画像URLを取得するアクセサ
+     * 画像URLアクセサ
      * $exchange->image_url で取得可能
      */
-    public function getImageUrlAttribute()
+    public function getImageUrlAttribute(): ?string
     {
         if (!$this->image_path) {
             return null;
