@@ -8,4 +8,13 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+server: {
+        host: "0.0.0.0", // 重要: Dockerからアクセス可能にする
+        port: 5173,
+        strictPort: true,
+        hmr: {
+            host: "localhost", // ブラウザからアクセスするホスト名
+        },
+    },
 });
+

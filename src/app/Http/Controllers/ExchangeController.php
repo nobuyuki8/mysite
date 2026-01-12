@@ -3,27 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Models\Exchange;
-use App\Models\Room; // 修正済み：message_rooms ではなく rooms
+use App\Models\Room;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class ExchangeController extends Controller
 {
     /**
-     * 物々交換投稿の一覧
+     * 物々交換一覧
      */
     public function index(): View
     {
-        $exchanges = Exchange::with('proposer')->latest()->get();
+        $exchanges = Exchange::with('proposer')
+            ->latest()
+            ->get();
+
         return view('exchanges.index', compact('exchanges'));
     }
 
     /**
-     * 物々交換投稿フォーム
+     * 投稿フォーム
      */
     public function create(): View
     {
@@ -31,7 +35,7 @@ class ExchangeController extends Controller
     }
 
     /**
-     * 保存
+     * 投稿保存
      */
     public function store(Request $request): RedirectResponse
     {
@@ -41,24 +45,23 @@ class ExchangeController extends Controller
             'offered_crop_name' => ['required', 'string', 'max:50'],
             'desired_crop_name' => ['required', 'string', 'max:50'],
             'area' => ['nullable', 'string', 'max:50'],
-            'image' => ['nullable', 'image', 'max:2048'], // 画像追加
+            'image' => ['nullable', 'image', 'max:2048'],
         ]);
 
-        // 画像があれば保存
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('exchanges', 'public');
         }
 
         $exchange = Exchange::create([
-            'proposer_user_id' => $request->user()->id,
+            'proposer_user_id' => Auth::id(),
             'receiver_user_id' => null,
             'post_id' => null,
             'title' => $validated['title'],
             'description' => $validated['description'],
             'offered_crop_name' => $validated['offered_crop_name'],
             'desired_crop_name' => $validated['desired_crop_name'],
-            'area' => $validated['area'] ?? $request->user()->area,
+            'area' => $validated['area'] ?? Auth::user()->area,
             'image_path' => $imagePath,
             'status' => 'pending',
         ]);
@@ -69,32 +72,37 @@ class ExchangeController extends Controller
     }
 
     /**
-     * 物々交換詳細（チャット表示付き）
+     * 詳細（チャット表示）
      */
     public function show(Exchange $exchange): View
     {
+        // 出品者 or 承諾者のみ閲覧可
         if (
-            $exchange->proposer_user_id !== Auth::id() &&
-            $exchange->receiver_user_id !== Auth::id()
+            Auth::id() !== $exchange->proposer_user_id &&
+            Auth::id() !== $exchange->receiver_user_id
         ) {
             abort(403);
         }
 
-        // rooms テーブルを参照
-        $room = Room::firstOrCreate([
-            'exchange_id' => $exchange->id
+        $room = $exchange->room;
+
+        $messages = collect();
+        if ($room) {
+            $messages = $room->messages()
+                ->with('user')
+                ->orderBy('created_at', 'asc')
+                ->get();
+        }
+
+        return view('exchanges.show', [
+            'exchange' => $exchange,
+            'room'     => $room,
+            'messages' => $messages,
         ]);
-
-        $messages = Message::with('user')
-            ->where('room_id', $room->id)
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        return view('exchanges.show', compact('exchange', 'room', 'messages'));
     }
 
     /**
-     * 編集フォーム
+     * 編集
      */
     public function edit(Exchange $exchange): View
     {
@@ -115,17 +123,21 @@ class ExchangeController extends Controller
         }
 
         $validated = $request->validate([
-            'title' => 'required|string|max:100',
-            'description' => 'required|string|max:500',
-            'offered_crop_name' => 'required|string|max:50',
-            'desired_crop_name' => 'required|string|max:50',
-            'area' => 'nullable|string|max:50',
-            'image' => ['nullable', 'image', 'max:2048'], // 画像更新対応
+            'title' => ['required', 'string', 'max:100'],
+            'description' => ['required', 'string', 'max:500'],
+            'offered_crop_name' => ['required', 'string', 'max:50'],
+            'desired_crop_name' => ['required', 'string', 'max:50'],
+            'area' => ['nullable', 'string', 'max:50'],
+            'image' => ['nullable', 'image', 'max:2048'],
         ]);
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('exchanges', 'public');
-            $validated['image_path'] = $imagePath;
+            if ($exchange->image_path) {
+                Storage::disk('public')->delete($exchange->image_path);
+            }
+
+            $validated['image_path'] =
+                $request->file('image')->store('exchanges', 'public');
         }
 
         $exchange->update($validated);
@@ -156,30 +168,53 @@ class ExchangeController extends Controller
     }
 
     /**
-     * 承諾・拒否
+     * 承諾・拒否（★最重要）
      */
-    public function updateStatus(Exchange $exchange, string $status): RedirectResponse
-    {
-        if ($exchange->receiver_user_id !== Auth::id()) {
+    public function updateStatus(
+        Exchange $exchange,
+        string $status
+    ): RedirectResponse {
+
+        // 投稿者は操作不可
+        if ($exchange->proposer_user_id === Auth::id()) {
             abort(403);
         }
 
-        if (!in_array($status, ['accepted', 'rejected'])) {
+        if (!in_array($status, ['accepted', 'rejected'], true)) {
             abort(400);
         }
 
-        $exchange->update(['status' => $status]);
+        DB::transaction(function () use ($exchange, $status) {
 
-        if ($status === 'accepted') {
-            $room = Room::firstOrCreate([
-                'exchange_id' => $exchange->id
-            ]);
+            if ($status === 'accepted') {
 
-            $room->users()->syncWithoutDetaching([
-                $exchange->proposer_user_id,
-                $exchange->receiver_user_id
-            ]);
-        }
+                // ① exchange 更新
+                $exchange->update([
+                    'receiver_user_id' => Auth::id(),
+                    'status' => 'accepted',
+                ]);
+
+                // ★ 超重要：最新状態を取得
+                $exchange->refresh();
+
+                // ② room 作成 or 取得
+                $room = Room::firstOrCreate([
+                    'exchange_id' => $exchange->id,
+                ]);
+
+                // ③ proposer + receiver を確実に登録
+                $userIds = array_filter([
+                    $exchange->proposer_user_id,
+                    $exchange->receiver_user_id,
+                ]);
+
+                $room->users()->syncWithoutDetaching($userIds);
+            }
+
+            if ($status === 'rejected') {
+                $exchange->update(['status' => 'rejected']);
+            }
+        });
 
         return redirect()
             ->back()

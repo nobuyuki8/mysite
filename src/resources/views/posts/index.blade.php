@@ -1,7 +1,7 @@
-@extends('layouts.app')
+<x-app-layout>
 
 {{-- ================= ページ見出し ================= --}}
-@section('header')
+<x-slot name="header">
 <div class="flex justify-between items-center">
     <h2 class="font-semibold text-xl text-gray-800">
         投稿一覧
@@ -17,10 +17,9 @@
         </a>
     @endauth
 </div>
-@endsection
+</x-slot>
 
 {{-- ================= メインコンテンツ ================= --}}
-@section('content')
 <div class="py-6">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-5xl mx-auto space-y-6">
@@ -109,7 +108,7 @@
                             @else
                                 （不明）
                             @endif
-                            ｜ {{ $post->created_at->format('Y/m/d H:i') }}
+                            ｜ {{ $post->created_at->timezone('Asia/Tokyo')->format('Y/m/d H:i') }}
                         </div>
                     </a>
 
@@ -149,7 +148,7 @@
         </div>
     </div>
 </div>
-@endsection
+</x-app-layout>
 
 @push('scripts')
 <script>

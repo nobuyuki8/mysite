@@ -20,24 +20,27 @@
     @include('layouts.navigation')
 
     {{-- ヘッダー --}}
-    @hasSection('header')
-        <header class="bg-gray-100 mt-6">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                @yield('header')
+    @isset($header)
+        <div class="bg-gray-100 border-b">
+            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                {{ $header }}
             </div>
-        </header>
-    @endif
-
-    {{-- メイン --}}
-    <main class="flex-1">
-        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-            @yield('content')
         </div>
+    @endisset
+
+    {{-- ページ内容 --}}
+    <main class="py-6">
+        @isset($slot)
+            {{ $slot }}
+        @else
+            {{-- もし $slot がない場合は section('content') を表示 --}}
+            @yield('content')
+        @endisset
     </main>
 
 </div>
 
-{{-- ★ これを追加 --}}
+{{-- ★ スクリプト用 --}}
 @stack('scripts')
 
 </body>

@@ -1,15 +1,9 @@
-@extends('layouts.app')
-
-{{-- ================= ヘッダー ================= --}}
-@section('header')
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        {{ __('物々交換 一覧') }}
-    </h2>
-@endsection
-
-
-{{-- ================= メインコンテンツ ================= --}}
-@section('content')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('物々交換 一覧') }}
+        </h2>
+    </x-slot>
 
 <div class="py-12">
     <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
@@ -162,4 +156,4 @@
     </div>
 </div>
 
-@endsection
+</x-app-layout>

@@ -15,41 +15,52 @@ class RoomController extends Controller
      */
     public function show(Exchange $exchange)
     {
-        // ★ 必須：投稿者・相手ユーザーを確実に読み込む
-        $exchange->loadMissing(['proposer', 'receiver']);
+        // 関連ロード
+        $exchange->loadMissing(['proposer', 'receiver', 'room.users']);
 
-        // 権限チェック（出品者 or 受信者のみ）
-        if (
-            Auth::id() !== $exchange->proposer_user_id &&
-            Auth::id() !== $exchange->receiver_user_id
-        ) {
-            abort(403, 'このチャットにアクセスする権限がありません。');
-        }
-
-        // ルーム取得 or 作成
+        /**
+         * ① ルーム取得 or 作成
+         *    承諾前でも作る（ただし user は安全に）
+         */
         $room = Room::firstOrCreate([
             'exchange_id' => $exchange->id,
         ]);
 
-        // メッセージ一覧（ユーザー情報込み）
-        $messages = Message::with('user')
-            ->where('room_id', $room->id)
+        /**
+         * ② ★null を除外して参加ユーザーを登録
+         *    出品者・承諾者以外の閲覧ユーザーはここで追加しなくてもOK
+         */
+        $userIds = array_filter([
+            $exchange->proposer_user_id,
+            $exchange->receiver_user_id,
+        ]);
+        $room->users()->syncWithoutDetaching($userIds);
+
+        /**
+         * ③ 権限チェックは削除（承諾前でも誰でも閲覧可能）
+         */
+
+        /**
+         * ④ メッセージ取得
+         */
+        $messages = $room->messages()
+            ->with('user')
             ->orderBy('created_at', 'asc')
             ->get();
 
-        // ★ 相手ユーザーを確定（必ずどちらかになる）
-        if (Auth::id() === $exchange->proposer_user_id) {
-            $partner = $exchange->receiver;
-        } else {
-            $partner = $exchange->proposer;
-        }
+        /**
+         * ⑤ partner 計算（ログインユーザー以外）
+         */
+        $partner = $room->users
+            ->where('id', '!=', Auth::id())
+            ->first();
 
-        return view('rooms.show', [
-            'room'     => $room,
-            'messages' => $messages,
-            'exchange' => $exchange,
-            'partner'  => $partner,
-        ]);
+        return view('rooms.show', compact(
+            'room',
+            'messages',
+            'exchange',
+            'partner'
+        ));
     }
 
     /**
@@ -58,25 +69,21 @@ class RoomController extends Controller
     public function send(Request $request, Room $room)
     {
         $request->validate([
-            'message' => 'required|string|max:2000',
+            'message' => ['required', 'string', 'max:2000'],
         ]);
 
-        // 交換情報取得（安全のため eager load）
-        $exchange = $room->exchange()->with(['proposer', 'receiver'])->first();
+        /**
+         * ★投稿権限も削除（誰でも送信可能）
+         * もし後で承諾者のみ制限に戻す場合はここを調整
+         */
 
-        // 権限チェック
-        if (
-            Auth::id() !== $exchange->proposer_user_id &&
-            Auth::id() !== $exchange->receiver_user_id
-        ) {
-            abort(403, 'このチャットに投稿する権限がありません。');
-        }
-
-        // メッセージ保存
+        /**
+         * メッセージ保存
+         */
         Message::create([
             'room_id'        => $room->id,
+            'user_id'        => Auth::id(),
             'sender_user_id' => Auth::id(),
-            'user_id'        => Auth::id(), // user リレーション用
             'message'        => $request->message,
         ]);
 

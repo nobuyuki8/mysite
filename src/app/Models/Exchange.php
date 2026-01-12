@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
 class Exchange extends Model
@@ -23,12 +25,12 @@ class Exchange extends Model
         'desired_crop_name',
         'area',
         'status',
-        'image_path',     // ★ 画像保存用
+        'image_path',
         'completed_at',
     ];
 
     /**
-     * 日付として扱うカラム
+     * キャスト
      */
     protected $casts = [
         'completed_at' => 'datetime',
@@ -37,15 +39,15 @@ class Exchange extends Model
     /**
      * 出品者（交換を提案したユーザー）
      */
-    public function proposer()
+    public function proposer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'proposer_user_id');
     }
 
     /**
-     * 交換相手（受信者）
+     * 交換相手（承諾したユーザー）
      */
-    public function receiver()
+    public function receiver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'receiver_user_id');
     }
@@ -53,17 +55,17 @@ class Exchange extends Model
     /**
      * 関連する投稿
      */
-    public function post()
+    public function post(): BelongsTo
     {
         return $this->belongsTo(Post::class);
     }
 
     /**
-     * この交換に紐づくチャットルーム
+     * チャットルーム（1交換 : 1ルーム）
      */
-    public function rooms()
+    public function room(): HasOne
     {
-        return $this->hasMany(Room::class);
+        return $this->hasOne(Room::class);
     }
 
     /**
@@ -72,7 +74,7 @@ class Exchange extends Model
      */
     public function getImageUrlAttribute(): ?string
     {
-        if (!$this->image_path) {
+        if (empty($this->image_path)) {
             return null;
         }
 

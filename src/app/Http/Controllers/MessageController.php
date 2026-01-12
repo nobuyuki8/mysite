@@ -3,28 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\Message;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 
 class MessageController extends Controller
 {
     /**
-     * メッセージ送信
+     * メッセージ削除
+     *
+     * @param  \App\Models\Message  $message
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request, $roomId)
+    public function destroy(Message $message): RedirectResponse
     {
-        // バリデーション
-        $request->validate([
-            'message' => 'required|string|max:1000',
-        ]);
+        // 自分のメッセージ以外は削除不可
+        if ($message->user_id !== Auth::id()) {
+            abort(403, 'このメッセージを削除する権限がありません。');
+        }
 
-        // メッセージ保存
-        Message::create([
-            'room_id'        => $roomId,
-            'sender_user_id' => Auth::id(),
-            'message'        => $request->message,
-        ]);
+        // メッセージ削除
+        $message->delete();
 
-        return redirect()->back()->with('success', 'メッセージを送信しました。');
+        return back()->with('success', 'メッセージを削除しました。');
     }
 }

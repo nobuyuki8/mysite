@@ -34,7 +34,7 @@ Route::get('/posts/{post}', [PostController::class, 'show'])
 
 // ユーザーページ（公開）
 Route::get('/users/{user}', [UserController::class, 'show'])
-    // ->whereNumber('user')
+    ->whereNumber('user')
     ->name('users.show');
 
 // ----------------------------------------
@@ -45,7 +45,7 @@ Route::get('/users/{user}', [UserController::class, 'show'])
 Route::get('/exchanges', [ExchangeController::class, 'index'])
     ->name('exchanges.index');
 
-// 物々交換詳細
+// 物々交換詳細（※チャットは含まない）
 Route::get('/exchanges/{exchange}', [ExchangeController::class, 'show'])
     ->whereNumber('exchange')
     ->name('exchanges.show');
@@ -58,17 +58,21 @@ Route::middleware('auth')->group(function () {
 
     // ------------------------------------
     // 投稿（CRUD）
-// ------------------------------------
+    // ------------------------------------
     Route::get('/posts/create', [PostController::class, 'create'])
         ->name('posts.create');
+
     Route::post('/posts', [PostController::class, 'store'])
         ->name('posts.store');
+
     Route::get('/posts/{post}/edit', [PostController::class, 'edit'])
         ->whereNumber('post')
         ->name('posts.edit');
+
     Route::put('/posts/{post}', [PostController::class, 'update'])
         ->whereNumber('post')
         ->name('posts.update');
+
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])
         ->whereNumber('post')
         ->name('posts.destroy');
@@ -77,6 +81,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/posts/{post}/like', [PostController::class, 'like'])
         ->whereNumber('post')
         ->name('posts.like');
+
     Route::delete('/posts/{post}/unlike', [PostController::class, 'unlike'])
         ->whereNumber('post')
         ->name('posts.unlike');
@@ -85,59 +90,91 @@ Route::middleware('auth')->group(function () {
     Route::post('/posts/{post}/comments', [CommentController::class, 'store'])
         ->whereNumber('post')
         ->name('comments.store');
+
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])
         ->whereNumber('comment')
         ->name('comments.destroy');
 
     // ------------------------------------
     // 物々交換（ログイン必須）
-// ------------------------------------
+    // ------------------------------------
     Route::get('/exchanges/create', [ExchangeController::class, 'create'])
         ->name('exchanges.create');
+
     Route::post('/exchanges', [ExchangeController::class, 'store'])
         ->name('exchanges.store');
+
     Route::get('/exchanges/{exchange}/edit', [ExchangeController::class, 'edit'])
         ->whereNumber('exchange')
         ->name('exchanges.edit');
+
     Route::put('/exchanges/{exchange}', [ExchangeController::class, 'update'])
         ->whereNumber('exchange')
         ->name('exchanges.update');
+
     Route::delete('/exchanges/{exchange}', [ExchangeController::class, 'destroy'])
         ->whereNumber('exchange')
         ->name('exchanges.destroy');
 
     // 承諾・拒否
-    Route::post('/exchanges/{exchange}/status/{status}', [ExchangeController::class, 'updateStatus'])
+    Route::post(
+        '/exchanges/{exchange}/status/{status}',
+        [ExchangeController::class, 'updateStatus']
+    )
         ->whereNumber('exchange')
         ->name('exchanges.updateStatus');
 
     // ------------------------------------
-    // チャット
-// ------------------------------------
-    Route::get('/rooms/{exchange}', [RoomController::class, 'show'])
+    // チャット（★完成形）
+    // ------------------------------------
+
+    /**
+     * チャット表示（exchange → room）
+     * URL: /exchanges/{exchange}/room
+     */
+    Route::get(
+        '/exchanges/{exchange}/room',
+        [RoomController::class, 'show']
+    )
         ->whereNumber('exchange')
         ->name('rooms.show');
-    Route::post('/rooms/{room}/messages', [RoomController::class, 'send'])
+
+    /**
+     * メッセージ送信
+     */
+    Route::post(
+        '/rooms/{room}/messages',
+        [RoomController::class, 'send']
+    )
         ->whereNumber('room')
         ->name('rooms.send');
-    Route::delete('/messages/{message}', [MessageController::class, 'destroy'])
+
+    /**
+     * メッセージ削除
+     */
+    Route::delete(
+        '/messages/{message}',
+        [MessageController::class, 'destroy']
+    )
         ->whereNumber('message')
         ->name('messages.destroy');
 
     // ------------------------------------
     // ダッシュボード
-// ------------------------------------
+    // ------------------------------------
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 
     // ------------------------------------
     // プロフィール
-// ------------------------------------
+    // ------------------------------------
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
+
     Route::patch('/profile', [ProfileController::class, 'update'])
         ->name('profile.update');
+
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
 });
