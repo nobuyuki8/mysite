@@ -3,63 +3,57 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 class LikeController extends Controller
 {
     /**
-     * いいねを追加する (POST /posts/{post}/like)
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Post $post
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * コンストラクタ
+     * いいねはログイン必須
      */
-    public function store(Request $request, Post $post): JsonResponse
+    public function __construct()
     {
-        $user = $request->user();
-
-        // すでにいいねしていなければ追加
-        if (!$post->likers()->where('user_id', $user->id)->exists()) {
-            $post->likers()->attach($user->id);
-        }
-
-        // いいね数を再取得
-        $likeCount = $post->likers()->count();
-
-        // JSONで返す
-        return response()->json([
-            'status' => 'success',
-            'liked' => true,
-            'count' => $likeCount,
-        ]);
+        $this->middleware('auth');
     }
 
     /**
-     * いいねを削除（解除）する (DELETE /posts/{post}/unlike)
+     * いいね ON / OFF を切り替える（トグル）
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Post $post
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * POST /posts/{post}/like
      */
-    public function destroy(Request $request, Post $post): JsonResponse
+    public function toggle(Post $post): JsonResponse
     {
-        $user = $request->user();
+        $user = Auth::user();
 
-        // いいねしていれば解除
-        if ($post->likers()->where('user_id', $user->id)->exists()) {
-            $post->likers()->detach($user->id);
+        // 念のため（通常ここには来ない）
+        if (!$user) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Unauthenticated',
+            ], 401);
         }
 
-        // いいね数を再取得
-        $likeCount = $post->likers()->count();
+        // すでにいいねしているか確認
+        $alreadyLiked = $post->likers()
+            ->where('user_id', $user->id)
+            ->exists();
 
-        // JSONで返す
+        if ($alreadyLiked) {
+            // いいね解除
+            $post->likers()->detach($user->id);
+        } else {
+            // いいね追加（重複防止）
+            $post->likers()->syncWithoutDetaching([$user->id]);
+        }
+
+        // 最新のいいね数
+        $count = $post->likers()->count();
+
         return response()->json([
             'status' => 'success',
-            'liked' => false,
-            'count' => $likeCount,
+            'liked'  => !$alreadyLiked,
+            'count'  => $count,
         ]);
     }
 }

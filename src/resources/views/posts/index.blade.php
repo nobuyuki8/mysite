@@ -33,18 +33,14 @@
                        value="{{ request('crop') }}"
                        class="flex-grow min-w-[140px] border rounded-md px-2 py-1 text-sm">
 
-                @php
-                    $tokyo23 = [
-                        '千代田区','中央区','港区','新宿区','文京区','台東区','墨田区','江東区',
-                        '品川区','目黒区','大田区','世田谷区','渋谷区','中野区','杉並区','豊島区',
-                        '北区','荒川区','板橋区','練馬区','足立区','葛飾区','江戸川区'
-                    ];
-                @endphp
-
                 <select name="area"
                         class="flex-grow min-w-[140px] border rounded-md px-2 py-1 text-sm">
                     <option value="">エリア</option>
-                    @foreach ($tokyo23 as $area)
+                    @foreach ([
+                        '千代田区','中央区','港区','新宿区','文京区','台東区','墨田区','江東区',
+                        '品川区','目黒区','大田区','世田谷区','渋谷区','中野区','杉並区','豊島区',
+                        '北区','荒川区','板橋区','練馬区','足立区','葛飾区','江戸川区'
+                    ] as $area)
                         <option value="{{ $area }}" {{ request('area') === $area ? 'selected' : '' }}>
                             {{ $area }}
                         </option>
@@ -70,45 +66,12 @@
                     <a href="{{ route('posts.show', $post) }}"
                        class="block hover:bg-gray-50 transition">
 
-                        {{-- タイトル --}}
                         <h3 class="text-lg font-semibold text-gray-800 mb-2">
                             {{ $post->title ?? '（タイトルなし）' }}
                         </h3>
 
-                        {{-- 本文 --}}
                         <div class="text-sm text-gray-700 whitespace-pre-wrap">
                             {{ $post->content }}
-                        </div>
-
-                        {{-- 画像 --}}
-                        @if ($post->image)
-                            <img src="{{ asset('storage/' . $post->image) }}"
-                                 class="w-full rounded-md mt-3 max-h-48 object-cover">
-                        @endif
-
-                        {{-- タグ --}}
-                        @if ($post->tags->count())
-                            <div class="flex flex-wrap gap-1 mt-3">
-                                @foreach ($post->tags as $tag)
-                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded">
-                                        {{ $tag->name }}
-                                    </span>
-                                @endforeach
-                            </div>
-                        @endif
-
-                        {{-- 投稿者情報 --}}
-                        <div class="mt-3 text-xs text-gray-500">
-                            投稿者：
-                            @if($post->user)
-                                <a href="{{ route('users.show', $post->user->id) }}"
-                                   class="text-blue-600 hover:underline">
-                                    {{ $post->user->name }}
-                                </a>
-                            @else
-                                （不明）
-                            @endif
-                            ｜ {{ $post->created_at->timezone('Asia/Tokyo')->format('Y/m/d H:i') }}
                         </div>
                     </a>
 
@@ -122,53 +85,52 @@
                                 ❤ いいね (<span class="like-count">{{ $post->likers->count() }}</span>)
                             </button>
                         @endauth
-
-                        {{-- 削除 --}}
-                        @if (Auth::id() === $post->user_id)
-                            <form method="POST" action="{{ route('posts.destroy', $post) }}">
-                                @csrf
-                                @method('DELETE')
-                                <button class="bg-red-100 text-red-600 px-3 py-1 rounded-md hover:bg-red-200 transition">
-                                    削除
-                                </button>
-                            </form>
-                        @endif
                     </div>
                 </div>
             @empty
                 <div class="text-center py-12 text-gray-500">
-                    <p class="text-lg">投稿はまだありません。</p>
-                    <p class="text-sm mt-2">最初の投稿をしてみましょう 🌱</p>
+                    投稿はまだありません。
                 </div>
             @endforelse
 
-            {{-- ページネーション --}}
             {{ $posts->withQueryString()->links() }}
-
         </div>
     </div>
 </div>
-</x-app-layout>
 
-@push('scripts')
+{{-- ★★★★★ JavaScriptは必ずここに直接書く ★★★★★ --}}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.like-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            fetch(`/posts/${btn.dataset.postId}/like`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document
-                        .querySelector('meta[name="csrf-token"]')
-                        .content
+        btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const postId = btn.dataset.postId;
+
+            try {
+                const res = await fetch(`/posts/${postId}/like`, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-CSRF-TOKEN': document
+                            .querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!res.ok) {
+                    throw new Error('Request failed');
                 }
-            })
-            .then(res => res.json())
-            .then(data => {
+
+                const data = await res.json();
                 btn.querySelector('.like-count').textContent = data.count;
-            });
+
+            } catch (e) {
+                alert('いいねに失敗しました');
+            }
         });
     });
 });
 </script>
-@endpush
+
+</x-app-layout>

@@ -8,6 +8,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\LikeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,10 +22,6 @@ use App\Http\Controllers\MessageController;
 
 // トップページ（投稿一覧）
 Route::get('/', [PostController::class, 'index'])
-    ->name('home');
-
-// 投稿一覧
-Route::get('/posts', [PostController::class, 'index'])
     ->name('posts.index');
 
 // 投稿詳細
@@ -37,27 +34,24 @@ Route::get('/users/{user}', [UserController::class, 'show'])
     ->whereNumber('user')
     ->name('users.show');
 
-// ----------------------------------------
+// ========================================
 // 物々交換（公開）
-// ----------------------------------------
+// ========================================
 
-// 物々交換一覧
 Route::get('/exchanges', [ExchangeController::class, 'index'])
     ->name('exchanges.index');
 
-// 物々交換詳細（※チャットは含まない）
 Route::get('/exchanges/{exchange}', [ExchangeController::class, 'show'])
     ->whereNumber('exchange')
     ->name('exchanges.show');
 
-
 // ========================================
 // 認証必須
 // ========================================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     // ------------------------------------
-    // 投稿（CRUD）
+    // 投稿
     // ------------------------------------
     Route::get('/posts/create', [PostController::class, 'create'])
         ->name('posts.create');
@@ -77,16 +71,16 @@ Route::middleware('auth')->group(function () {
         ->whereNumber('post')
         ->name('posts.destroy');
 
-    // いいね
-    Route::post('/posts/{post}/like', [PostController::class, 'like'])
+    // ------------------------------------
+    // ★ いいね（確定版）
+    // ------------------------------------
+    Route::post('/posts/{post}/like', [LikeController::class, 'toggle'])
         ->whereNumber('post')
         ->name('posts.like');
 
-    Route::delete('/posts/{post}/unlike', [PostController::class, 'unlike'])
-        ->whereNumber('post')
-        ->name('posts.unlike');
-
+    // ------------------------------------
     // コメント
+    // ------------------------------------
     Route::post('/posts/{post}/comments', [CommentController::class, 'store'])
         ->whereNumber('post')
         ->name('comments.store');
@@ -116,7 +110,6 @@ Route::middleware('auth')->group(function () {
         ->whereNumber('exchange')
         ->name('exchanges.destroy');
 
-    // 承諾・拒否
     Route::post(
         '/exchanges/{exchange}/status/{status}',
         [ExchangeController::class, 'updateStatus']
@@ -125,13 +118,8 @@ Route::middleware('auth')->group(function () {
         ->name('exchanges.updateStatus');
 
     // ------------------------------------
-    // チャット（★完成形）
+    // チャット
     // ------------------------------------
-
-    /**
-     * チャット表示（exchange → room）
-     * URL: /exchanges/{exchange}/room
-     */
     Route::get(
         '/exchanges/{exchange}/room',
         [RoomController::class, 'show']
@@ -139,9 +127,6 @@ Route::middleware('auth')->group(function () {
         ->whereNumber('exchange')
         ->name('rooms.show');
 
-    /**
-     * メッセージ送信
-     */
     Route::post(
         '/rooms/{room}/messages',
         [RoomController::class, 'send']
@@ -149,22 +134,12 @@ Route::middleware('auth')->group(function () {
         ->whereNumber('room')
         ->name('rooms.send');
 
-    /**
-     * メッセージ削除
-     */
     Route::delete(
         '/messages/{message}',
         [MessageController::class, 'destroy']
     )
         ->whereNumber('message')
         ->name('messages.destroy');
-
-    // ------------------------------------
-    // ダッシュボード
-    // ------------------------------------
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
 
     // ------------------------------------
     // プロフィール

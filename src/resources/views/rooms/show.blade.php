@@ -1,14 +1,9 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            💬
-            @if ($partner ?? false)
-                {{ $partner->name }} さんとのやり取り
-            @else
-                チャット
-            @endif
-        </h2>
-    </x-slot>
+<x-slot name="header">
+    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        💬 {{ $exchange->title }} の出品者にメッセージを送る
+    </h2>
+</x-slot>
 
     <div class="max-w-3xl mx-auto mt-6 px-3">
 
@@ -19,9 +14,9 @@
                 {{ $exchange->description }}
             </p>
 
-            <p class="text-xs text-gray-500 mt-2">
+            <!-- <p class="text-xs text-gray-500 mt-2">
                 ステータス：{{ $exchange->status }}
-            </p>
+            </p> -->
         </div>
 
         {{-- メッセージ一覧 --}}

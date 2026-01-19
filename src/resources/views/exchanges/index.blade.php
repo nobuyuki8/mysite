@@ -82,26 +82,33 @@
                     </div>
                 @endif
 
-                {{-- ステータス --}}
-                <div class="mt-3">
-                    <span class="inline-block px-2 py-1 text-xs rounded
-                        @if($exchange->status === 'pending') bg-yellow-100 text-yellow-800
-                        @elseif($exchange->status === 'accepted') bg-green-100 text-green-800
-                        @elseif($exchange->status === 'rejected') bg-red-100 text-red-800
-                        @endif">
-                        {{ ucfirst($exchange->status) }}
-                    </span>
-                </div>
+<!-- {{-- ステータス（pending は表示しない） --}}
+@if($exchange->status !== 'pending')
+    <div class="mt-3">
+        <span class="inline-block px-2 py-1 text-xs rounded
+            @if($exchange->status === 'accepted') bg-green-100 text-green-800
+            @elseif($exchange->status === 'rejected') bg-red-100 text-red-800
+            @endif">
+            {{ ucfirst($exchange->status) }}
+        </span>
+    </div>
+@endif -->
 
-                {{-- チャット --}}
-                @auth
-                    <div class="mt-4">
-                        <a href="{{ route('rooms.show', $exchange) }}"
-                           class="inline-block px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600">
-                            💬 チャットへ
-                        </a>
-                    </div>
-                @endauth
+
+{{-- チャット --}}
+@auth
+    <div class="mt-4">
+        <a href="{{ route('rooms.show', $exchange) }}"
+           style="display:inline-block;
+                  padding:8px 16px;
+                  background:#4f46e5;
+                  color:#000;
+                  border-radius:6px;">
+            出品者にメッセージを送る
+        </a>
+    </div>
+@endauth
+
 
                 {{-- 承諾 / 拒否（受信者のみ） --}}
                 @auth
