@@ -60,21 +60,19 @@
             </form>
 
             {{-- 投稿一覧 --}}
-            @forelse ($posts as $post)
-                <div class="bg-white p-4 shadow-sm rounded-lg">
-
-                    <a href="{{ route('posts.show', $post) }}"
-                       class="block hover:bg-gray-50 transition">
-<h3 class="text-lg font-semibold text-gray-800 mb-2">
-    {{ $post->title ?? '（タイトルなし）' }}
-</h3>
-
-<p class="text-sm text-gray-800 font-semibold mb-2">
-    👤 投稿者：{{ $post->user?->name ?? '不明' }}
-</p>
+           @forelse ($posts as $post)
+<div class="bg-white p-4 shadow-sm rounded-lg">
 
 <a href="{{ route('posts.show', $post) }}"
    class="block hover:bg-gray-50 transition">
+
+    <h3 class="text-lg font-semibold text-gray-800 mb-2">
+        {{ $post->title ?? '（タイトルなし）' }}
+    </h3>
+
+    <p class="text-sm text-gray-800 font-semibold mb-2">
+        :bust_in_silhouette: 投稿者：{{ $post->user?->name ?? '不明' }}
+    </p>
 
     <div class="text-sm text-gray-700 whitespace-pre-wrap">
         {{ $post->content }}
@@ -88,25 +86,25 @@
         </div>
     @endif
 
-                    </a>
+</a>
 
-                    <div class="mt-3 flex justify-between items-center text-sm">
+    <div class="mt-3 flex justify-between items-center text-sm">
+        {{-- いいね --}}
+        @auth
+        <button type="button"
+                class="like-btn bg-pink-100 text-pink-600 px-3 py-1 rounded-md hover:bg-pink-200 transition"
+                data-post-id="{{ $post->id }}">
+            ❤ いいね (<span class="like-count">{{ $post->likers->count() }}</span>)
+        </button>
+        @endauth
+    </div>
+</div>
+@empty
+<div class="text-center py-12 text-gray-500">
+    投稿はまだありません。
+</div>
+@endforelse
 
-                        {{-- いいね --}}
-                        @auth
-                            <button type="button"
-                                    class="like-btn bg-pink-100 text-pink-600 px-3 py-1 rounded-md hover:bg-pink-200 transition"
-                                    data-post-id="{{ $post->id }}">
-                                ❤ いいね (<span class="like-count">{{ $post->likers->count() }}</span>)
-                            </button>
-                        @endauth
-                    </div>
-                </div>
-            @empty
-                <div class="text-center py-12 text-gray-500">
-                    投稿はまだありません。
-                </div>
-            @endforelse
 
             {{ $posts->withQueryString()->links() }}
         </div>
