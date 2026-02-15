@@ -65,8 +65,7 @@
 
                     <a href="{{ route('posts.show', $post) }}"
                        class="block hover:bg-gray-50 transition">
-
-                 <h3 class="text-lg font-semibold text-gray-800 mb-2">
+<h3 class="text-lg font-semibold text-gray-800 mb-2">
     {{ $post->title ?? '（タイトルなし）' }}
 </h3>
 
@@ -74,17 +73,20 @@
     👤 投稿者：{{ $post->user?->name ?? '不明' }}
 </p>
 
-<div class="text-sm text-gray-700 whitespace-pre-wrap">
-    {{ $post->content }}
-</div>
-                        
-@if ($post->image)
- <div class="mt-3">
-   <img src="{{ asset('storage/' . $post->image) }}"
-        alt="投稿画像"
-        class="rounded-md w-full max-w-lg h-auto">
- </div>
-@endif
+<a href="{{ route('posts.show', $post) }}"
+   class="block hover:bg-gray-50 transition">
+
+    <div class="text-sm text-gray-700 whitespace-pre-wrap">
+        {{ $post->content }}
+    </div>
+
+    @if ($post->image)
+        <div class="mt-3">
+            <img src="{{ asset('storage/' . $post->image) }}"
+                 alt="投稿画像"
+                 class="rounded-md w-full max-w-lg h-auto">
+        </div>
+    @endif
 
                     </a>
 
