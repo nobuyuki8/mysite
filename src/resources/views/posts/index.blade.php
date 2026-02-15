@@ -66,13 +66,17 @@
                     <a href="{{ route('posts.show', $post) }}"
                        class="block hover:bg-gray-50 transition">
 
-                        <h3 class="text-lg font-semibold text-gray-800 mb-2">
-                            {{ $post->title ?? '（タイトルなし）' }}
-                        </h3>
+                 <h3 class="text-lg font-semibold text-gray-800 mb-2">
+    {{ $post->title ?? '（タイトルなし）' }}
+</h3>
 
-                        <div class="text-sm text-gray-700 whitespace-pre-wrap">
-                            {{ $post->content }}
-                        </div>
+<p class="text-sm text-gray-500 mb-2">
+    投稿者：{{ $post->user?->name ?? '不明' }}
+</p>
+
+<div class="text-sm text-gray-700 whitespace-pre-wrap">
+    {{ $post->content }}
+</div>
                         
 @if ($post->image)
  <div class="mt-3">
