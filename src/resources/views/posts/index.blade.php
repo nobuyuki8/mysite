@@ -73,6 +73,15 @@
                         <div class="text-sm text-gray-700 whitespace-pre-wrap">
                             {{ $post->content }}
                         </div>
+                        
+@if ($post->image)
+ <div class="mt-3">
+   <img src="{{ asset('storage/' . $post->image) }}"
+        alt="投稿画像"
+        class="rounded-md w-full max-w-lg h-auto">
+ </div>
+@endif
+
                     </a>
 
                     <div class="mt-3 flex justify-between items-center text-sm">

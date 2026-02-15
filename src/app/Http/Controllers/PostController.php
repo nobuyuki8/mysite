@@ -18,7 +18,7 @@ class PostController extends Controller
     {
         $query = Post::with(['user', 'tags', 'likers']);
 
-        // キーワード検索（タイトル＋本文）
+        // キーワード検索
         if ($request->filled('keyword')) {
             $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', "%{$request->keyword}%")
@@ -26,14 +26,13 @@ class PostController extends Controller
             });
         }
 
-        // 23区の定義
+        // 23区
         $tokyo23 = [
             '千代田区','中央区','港区','新宿区','文京区','台東区','墨田区','江東区',
             '品川区','目黒区','大田区','世田谷区','渋谷区','中野区','杉並区','豊島区',
             '北区','荒川区','板橋区','練馬区','足立区','葛飾区','江戸川区'
         ];
 
-        // エリア検索
         if ($request->filled('area')) {
             $area = $request->area;
 
@@ -53,9 +52,8 @@ class PostController extends Controller
             );
         }
 
-        // 最新順
         $posts = $query
-            ->orderByDesc('created_at')
+            ->latest()
             ->paginate(10)
             ->withQueryString();
 
@@ -68,7 +66,6 @@ class PostController extends Controller
     public function show(Post $post)
     {
         $post->load(['user', 'tags', 'comments.user']);
-
         return view('posts.show', compact('post'));
     }
 
@@ -81,18 +78,19 @@ class PostController extends Controller
     }
 
     /**
-     * 投稿保存（★完全修正版）
+     * 投稿保存（完全安定版）
      */
     public function store(StorePostRequest $request)
     {
         $validated = $request->validated();
 
-        // 画像アップロード
-        $imagePath = $request->hasFile('image')
-            ? $request->file('image')->store('posts', 'public')
-            : null;
+        $imagePath = null;
 
-        // 投稿作成（title を必ず保存）
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')
+                ->store('posts', 'public');
+        }
+
         $post = Post::create([
             'user_id' => Auth::id(),
             'title'   => $validated['title'],
@@ -100,15 +98,15 @@ class PostController extends Controller
             'image'   => $imagePath,
         ]);
 
-        /**
-         * -------- タグ処理 --------
-         */
+        // タグ処理
         if (!empty($validated['tags'])) {
 
             $rawTags = preg_split('/[\p{Z}\s、,#]+/u', $validated['tags'], -1, PREG_SPLIT_NO_EMPTY);
+
             $tagIds = [];
 
             foreach ($rawTags as $tagName) {
+
                 $tagName = trim($tagName);
 
                 if (mb_strlen($tagName) <= 1) continue;
@@ -118,7 +116,7 @@ class PostController extends Controller
                 $tagIds[] = $tag->id;
             }
 
-            if ($tagIds) {
+            if (!empty($tagIds)) {
                 $post->tags()->sync($tagIds);
             }
         }
@@ -129,6 +127,41 @@ class PostController extends Controller
     }
 
     /**
+     * 投稿更新（画像差し替え対応）
+     */
+    public function update(StorePostRequest $request, Post $post)
+    {
+        if ($post->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $validated = $request->validated();
+
+        $imagePath = $post->image;
+
+        if ($request->hasFile('image')) {
+
+            // 古い画像削除
+            if ($post->image && Storage::disk('public')->exists($post->image)) {
+                Storage::disk('public')->delete($post->image);
+            }
+
+            $imagePath = $request->file('image')
+                ->store('posts', 'public');
+        }
+
+        $post->update([
+            'title'   => $validated['title'],
+            'content' => $validated['content'],
+            'image'   => $imagePath,
+        ]);
+
+        return redirect()
+            ->route('posts.show', $post)
+            ->with('success', '投稿を更新しました');
+    }
+
+    /**
      * いいね
      */
     public function like(Post $post)
@@ -136,9 +169,8 @@ class PostController extends Controller
         $post->likers()->syncWithoutDetaching(Auth::id());
 
         return response()->json([
-            'status' => 'success',
-            'liked'  => true,
-            'count'  => $post->likers()->count(),
+            'liked' => true,
+            'count' => $post->likers()->count(),
         ]);
     }
 
@@ -150,9 +182,8 @@ class PostController extends Controller
         $post->likers()->detach(Auth::id());
 
         return response()->json([
-            'status' => 'success',
-            'liked'  => false,
-            'count'  => $post->likers()->count(),
+            'liked' => false,
+            'count' => $post->likers()->count(),
         ]);
     }
 
@@ -162,7 +193,7 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         if ($post->user_id !== Auth::id()) {
-            abort(403, '権限なし');
+            abort(403);
         }
 
         if ($post->image && Storage::disk('public')->exists($post->image)) {
