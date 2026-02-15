@@ -66,12 +66,11 @@
 <a href="{{ route('posts.show', $post) }}"
    class="block hover:bg-gray-50 transition">
 
-    <h3 class="text-lg font-semibold text-gray-800 mb-2">
-        {{ $post->title ?? '（タイトルなし）' }}
+<h3 class="text-lg font-semibold text-gray-800 mb-2">
+        {{ $post->title ?? '（タイトルなし）' }}{{ $post->user?->name }}
     </h3>
-
    <p class="text-sm text-gray-800 font-semibold mb-2">
-    👤 投稿者：{{ $post->user?->name ?? '不明' }}
+    👤 投稿者：
 </p>
 
     <div class="text-sm text-gray-700 whitespace-pre-wrap">
