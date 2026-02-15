@@ -70,9 +70,9 @@
         {{ $post->title ?? '（タイトルなし）' }}
     </h3>
 
-    <p class="text-sm text-gray-800 font-semibold mb-2">
-        :bust_in_silhouette: 投稿者：{{ $post->user?->name ?? '不明' }}
-    </p>
+   <p class="text-sm text-gray-800 font-semibold mb-2">
+    👤 投稿者：{{ $post->user?->name ?? '不明' }}
+</p>
 
     <div class="text-sm text-gray-700 whitespace-pre-wrap">
         {{ $post->content }}
