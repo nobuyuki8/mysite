@@ -61,10 +61,10 @@
 
             {{-- 投稿一覧 --}}
 @forelse ($posts as $post)
-<div class="bg-white p-4 shadow-sm rounded-lg">
 
-    <div class="bg-white p-4 shadow-sm rounded-lg hover:bg-gray-50 transition">
+<div class="bg-white p-4 shadow-sm rounded-lg hover:bg-gray-50 transition">
 
+    {{-- タイトル --}}
     <h3 class="text-lg font-semibold text-gray-800 mb-2">
         <a href="{{ route('posts.show', $post) }}"
            class="hover:underline">
@@ -72,12 +72,12 @@
         </a>
     </h3>
 
+    {{-- 投稿者 --}}
     <p class="text-sm text-gray-800 font-semibold mb-2">
         👤 投稿者：
         @if($post->user)
             <a href="{{ route('users.show', $post->user) }}"
-               class="text-blue-600 hover:underline"
-               onclick="event.stopPropagation();">
+               class="text-blue-600 hover:underline">
                 {{ $post->user->name }}
             </a>
         @else
@@ -85,23 +85,21 @@
         @endif
     </p>
 
+    {{-- 本文 --}}
     <div class="text-sm text-gray-700 whitespace-pre-wrap">
         {{ $post->content }}
     </div>
 
-</div>
+    {{-- 画像 --}}
+    @if ($post->image)
+        <div class="mt-3">
+            <img src="{{ asset('storage/' . $post->image) }}"
+                 alt="投稿画像"
+                 class="rounded-md w-full max-w-lg h-auto">
+        </div>
+    @endif
 
-
-        @if ($post->image)
-            <div class="mt-3">
-                <img src="{{ asset('storage/' . $post->image) }}"
-                     alt="投稿画像"
-                     class="rounded-md w-full max-w-lg h-auto">
-            </div>
-        @endif
-
-    </div>
-
+    {{-- いいね --}}
     <div class="mt-3 flex justify-between items-center text-sm">
         @auth
         <button type="button"
@@ -113,12 +111,13 @@
     </div>
 
 </div>
-@empty
 
+@empty
 <div class="text-center py-12 text-gray-500">
     投稿はまだありません。
 </div>
 @endforelse
+
 
 
             {{ $posts->withQueryString()->links() }}
