@@ -63,30 +63,34 @@
 @forelse ($posts as $post)
 <div class="bg-white p-4 shadow-sm rounded-lg">
 
-    <div class="block hover:bg-gray-50 transition">
+    <div class="bg-white p-4 shadow-sm rounded-lg hover:bg-gray-50 transition">
 
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">
-            <a href="{{ route('posts.show', $post) }}"
-               class="hover:underline">
-                {{ $post->title ?? '（タイトルなし）' }}
+    <h3 class="text-lg font-semibold text-gray-800 mb-2">
+        <a href="{{ route('posts.show', $post) }}"
+           class="hover:underline">
+            {{ $post->title ?? '（タイトルなし）' }}
+        </a>
+    </h3>
+
+    <p class="text-sm text-gray-800 font-semibold mb-2">
+        👤 投稿者：
+        @if($post->user)
+            <a href="{{ route('users.show', $post->user) }}"
+               class="text-blue-600 hover:underline"
+               onclick="event.stopPropagation();">
+                {{ $post->user->name }}
             </a>
-        </h3>
+        @else
+            不明
+        @endif
+    </p>
 
-        <p class="text-sm text-gray-800 font-semibold mb-2">
-            👤 投稿者：
-            @if($post->user)
-                <a href="{{ route('users.show', $post->user) }}"
-                   class="text-blue-600 hover:underline">
-                    {{ $post->user->name }}
-                </a>
-            @else
-                不明
-            @endif
-        </p>
+    <div class="text-sm text-gray-700 whitespace-pre-wrap">
+        {{ $post->content }}
+    </div>
 
-        <div class="text-sm text-gray-700 whitespace-pre-wrap">
-            {{ $post->content }}
-        </div>
+</div>
+
 
         @if ($post->image)
             <div class="mt-3">
