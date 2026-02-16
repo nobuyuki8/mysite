@@ -60,43 +60,45 @@
             </form>
 
             {{-- 投稿一覧 --}}
-           @forelse ($posts as $post)
+@forelse ($posts as $post)
 <div class="bg-white p-4 shadow-sm rounded-lg">
 
-<a href="{{ route('posts.show', $post) }}"
-   class="block hover:bg-gray-50 transition">
+    <div class="block hover:bg-gray-50 transition">
 
-  <h3 class="text-lg font-semibold text-gray-800 mb-2">
-        {{ $post->title ?? '（タイトルなし）' }}
-    </h3>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">
+            <a href="{{ route('posts.show', $post) }}"
+               class="hover:underline">
+                {{ $post->title ?? '（タイトルなし）' }}
+            </a>
+        </h3>
 
-<p class="text-sm text-gray-800 font-semibold mb-2">
-    👤 投稿者：
-    @if($post->user)
-        <a href="{{ route('users.show', $post->user) }}"
-           class="text-blue-600 hover:underline">
-            {{ $post->user->name }}
-        </a>
-    @else
-        不明
-    @endif
-</p>
-    <div class="text-sm text-gray-700 whitespace-pre-wrap">
-        {{ $post->content }}
+        <p class="text-sm text-gray-800 font-semibold mb-2">
+            👤 投稿者：
+            @if($post->user)
+                <a href="{{ route('users.show', $post->user) }}"
+                   class="text-blue-600 hover:underline">
+                    {{ $post->user->name }}
+                </a>
+            @else
+                不明
+            @endif
+        </p>
+
+        <div class="text-sm text-gray-700 whitespace-pre-wrap">
+            {{ $post->content }}
+        </div>
+
+        @if ($post->image)
+            <div class="mt-3">
+                <img src="{{ asset('storage/' . $post->image) }}"
+                     alt="投稿画像"
+                     class="rounded-md w-full max-w-lg h-auto">
+            </div>
+        @endif
+
     </div>
 
-    @if ($post->image)
-        <div class="mt-3">
-            <img src="{{ asset('storage/' . $post->image) }}"
-                 alt="投稿画像"
-                 class="rounded-md w-full max-w-lg h-auto">
-        </div>
-    @endif
-
-</a>
-
     <div class="mt-3 flex justify-between items-center text-sm">
-        {{-- いいね --}}
         @auth
         <button type="button"
                 class="like-btn bg-pink-100 text-pink-600 px-3 py-1 rounded-md hover:bg-pink-200 transition"
@@ -105,8 +107,10 @@
         </button>
         @endauth
     </div>
+
 </div>
 @empty
+
 <div class="text-center py-12 text-gray-500">
     投稿はまだありません。
 </div>
