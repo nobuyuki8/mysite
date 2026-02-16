@@ -65,11 +65,11 @@
                     {{ $exchange->area ?? '未設定' }}
                 </p>
 
-                @if(!empty($exchange->description))
+                <!-- @if(!empty($exchange->description))
                     <p class="mt-2 text-gray-700">
                         {{ $exchange->description }}
                     </p>
-                @endif
+                @endif -->
 
                 {{-- 画像 --}}
                 @if(!empty($exchange->image_path))
