@@ -70,10 +70,17 @@
         {{ $post->title ?? '（タイトルなし）' }}
     </h3>
 
-   <p class="text-sm text-gray-800 font-semibold mb-2">
-    👤 投稿者：{{ $post->user?->name ?? '不明' }}
+<p class="text-sm text-gray-800 font-semibold mb-2">
+    👤 投稿者：
+    @if($post->user)
+        <a href="{{ route('users.show', $post->user) }}"
+           class="text-blue-600 hover:underline">
+            {{ $post->user->name }}
+        </a>
+    @else
+        不明
+    @endif
 </p>
-
     <div class="text-sm text-gray-700 whitespace-pre-wrap">
         {{ $post->content }}
     </div>
