@@ -71,14 +71,15 @@
     {{-- 投稿者 --}}
     <p class="text-sm text-gray-800 font-semibold mb-2">
         👤 投稿者：
-        @if($post->user)
-            <span class="text-blue-600">
-                {{ $post->user->name }}
-            </span>
-        @else
-            不明
-        @endif
-    </p>
+@if($post->user)
+    <a href="{{ route('users.show', $post->user) }}"
+       class="text-blue-600 hover:underline"
+       onclick="event.stopPropagation();">
+        {{ $post->user->name }}
+    </a>
+@else
+    不明
+@endif
 
     {{-- 投稿日時 --}}
     <p class="text-xs text-gray-500 mb-2">
