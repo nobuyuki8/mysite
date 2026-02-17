@@ -67,20 +67,20 @@
     <h3 class="text-lg font-semibold text-gray-800 mb-2">
         {{ $post->title ?? '（タイトルなし）' }}
     </h3>
+{{-- 投稿者 --}}
+<p class="text-sm text-gray-800 font-semibold mb-2">
+    👤 投稿者：
+    @if($post->user)
+        <a href="{{ route('users.show', $post->user) }}"
+           class="text-blue-600 hover:underline"
+           onclick="event.stopPropagation();">
+            {{ $post->user->name }}
+        </a>
+    @else
+        不明
+    @endif
+</p>
 
-    {{-- 投稿者 --}}
-    <p class="text-sm text-gray-800 font-semibold">
-        👤 投稿者：
-        @if($post->user)
-            <a href="{{ route('users.show', $post->user) }}"
-               class="text-blue-600 hover:underline"
-               onclick="event.stopPropagation();">
-                {{ $post->user->name }}
-            </a>
-        @else
-            不明
-        @endif
-    </p>
 
     {{-- 投稿日時 --}}
     <p class="text-xs text-gray-500 mb-3">
