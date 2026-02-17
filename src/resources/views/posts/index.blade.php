@@ -60,37 +60,21 @@
             </form>
 @forelse ($posts as $post)
 
-<div class="bg-white p-4 shadow-sm rounded-lg hover:bg-gray-50 transition">
+<a href="{{ route('posts.show', $post) }}"
+   class="block bg-white p-4 shadow-sm rounded-lg hover:bg-gray-50 transition">
 
-    {{-- 投稿リンクエリア --}}
-    <a href="{{ route('posts.show', $post) }}" class="block">
-
-        {{-- タイトル --}}
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">
-            {{ $post->title ?? '（タイトルなし）' }}
-        </h3>
-
-        {{-- 本文 --}}
-        <div class="text-sm text-gray-700 whitespace-pre-wrap">
-            {{ $post->content }}
-        </div>
-
-        {{-- 画像 --}}
-        @if ($post->image)
-            <div class="mt-3">
-                <img src="{{ asset('storage/' . $post->image) }}"
-                     alt="投稿画像"
-                     class="rounded-md w-full max-w-lg h-auto">
-            </div>
-        @endif
-    </a>
+    {{-- タイトル --}}
+    <h3 class="text-lg font-semibold text-gray-800 mb-2">
+        {{ $post->title ?? '（タイトルなし）' }}
+    </h3>
 
     {{-- 投稿者 --}}
-    <p class="text-sm text-gray-800 font-semibold mt-3">
+    <p class="text-sm text-gray-800 font-semibold">
         👤 投稿者：
         @if($post->user)
             <a href="{{ route('users.show', $post->user) }}"
-               class="text-blue-600 hover:underline">
+               class="text-blue-600 hover:underline"
+               onclick="event.stopPropagation();">
                 {{ $post->user->name }}
             </a>
         @else
@@ -99,21 +83,35 @@
     </p>
 
     {{-- 投稿日時 --}}
-    <p class="text-xs text-gray-500 mb-2">
+    <p class="text-xs text-gray-500 mb-3">
         🕒 {{ $post->created_at?->format('Y年m月d日 H:i') }}
     </p>
 
-    {{-- いいね --}}
-    <div class="mt-3 flex justify-between items-center text-sm">
-        @auth
-        <button type="button"
-                class="like-btn bg-pink-100 text-pink-600 px-3 py-1 rounded-md hover:bg-pink-200 transition"
-                data-post-id="{{ $post->id }}">
-            ❤ いいね (<span class="like-count">{{ $post->likers->count() }}</span>)
-        </button>
-        @endauth
+    {{-- 本文 --}}
+    <div class="text-sm text-gray-700 whitespace-pre-line mb-3">
+        {{ trim($post->content) }}
     </div>
 
+    {{-- 画像 --}}
+    @if ($post->image)
+        <div class="mt-2">
+            <img src="{{ asset('storage/' . $post->image) }}"
+                 alt="投稿画像"
+                 class="rounded-md w-full max-w-lg h-auto">
+        </div>
+    @endif
+
+</a>
+
+{{-- いいねボタン --}}
+<div class="mt-3 flex justify-between items-center text-sm mb-6">
+    @auth
+    <button type="button"
+            class="like-btn bg-pink-100 text-pink-600 px-3 py-1 rounded-md hover:bg-pink-200 transition"
+            data-post-id="{{ $post->id }}">
+        ❤ いいね (<span class="like-count">{{ $post->likers->count() }}</span>)
+    </button>
+    @endauth
 </div>
 
 @empty
@@ -121,6 +119,7 @@
     投稿はまだありません。
 </div>
 @endforelse
+
 
 
 
