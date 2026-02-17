@@ -60,17 +60,16 @@
             </form>
 @forelse ($posts as $post)
 
-<div class="bg-white p-4 shadow-sm rounded-lg mb-6 hover:shadow-md transition">
+<div onclick="window.location='{{ route('posts.show', $post) }}'"
+     class="bg-white p-4 shadow-sm rounded-lg mb-6 hover:shadow-md transition cursor-pointer">
 
-    {{-- カードクリック部分 --}}
-    <a href="{{ route('posts.show', $post) }}" class="block">
 
         {{-- タイトル --}}
         <h3 class="text-lg font-semibold text-gray-800 mb-2">
             {{ $post->title ?? '（タイトルなし）' }}
         </h3>
 
-       {{-- 投稿者＋日時を横並び --}}
+     {{-- 投稿者＋日時を横並び --}}
 <div class="flex items-center gap-4 text-sm text-gray-600 mb-3">
 
     {{-- 投稿者 --}}
@@ -78,18 +77,19 @@
         <span>投稿者：</span>
         @if($post->user)
             <a href="{{ route('users.show', $post->user) }}"
-               class="text-blue-600 hover:underline inline"
+               class="text-blue-600 hover:underline"
                onclick="event.stopPropagation();">
                 {{ $post->user->name }}
             </a>
         @else
-            不明
+            <span>不明</span>
         @endif
     </div>
 
     {{-- 投稿日時 --}}
-    <div>
-        🕒 {{ $post->created_at?->format('Y年m月d日 H:i') }}
+    <div class="flex items-center gap-1">
+        <span>🕒</span>
+        <span>{{ $post->created_at?->format('Y年m月d日 H:i') }}</span>
     </div>
 
 </div>
@@ -107,7 +107,6 @@
             </div>
         @endif
 
-    </a>
 
     {{-- いいね（カード内に置く） --}}
     <div class="mt-3 text-sm">
@@ -143,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.like-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             e.preventDefault();
+            e.stopPropagation(); // ← これを追加
 
             const postId = btn.dataset.postId;
 
