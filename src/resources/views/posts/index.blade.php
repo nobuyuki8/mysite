@@ -122,7 +122,7 @@
 
 
             {{ $posts->withQueryString()->links() }}
-        </div>a
+        </div>
     </div>
 </div>
 
