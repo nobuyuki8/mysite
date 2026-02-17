@@ -74,17 +74,18 @@
         <div class="flex items-center gap-4 text-sm text-gray-600 mb-3">
 
             <div>
-                👤 投稿者：
-                @if($post->user)
-                    <a href="{{ route('users.show', $post->user) }}"
-                       class="text-blue-600 hover:underline"
-                       onclick="event.stopPropagation();">
-                        {{ $post->user->name }}
-                    </a>
-                @else
-                    不明
-                @endif
-            </div>
+    投稿者：
+    @if($post->user)
+        <a href="{{ route('users.show', $post->user) }}"
+           class="text-blue-600 hover:underline"
+           onclick="event.stopPropagation();">
+            {{ $post->user->name }}
+        </a>
+    @else
+        不明
+    @endif
+</div>
+
 
             <div>
                 🕒 {{ $post->created_at?->format('Y年m月d日 H:i') }}
@@ -93,9 +94,9 @@
         </div>
 
         {{-- 本文 --}}
-        <div class="text-sm text-gray-700 whitespace-pre-line mb-3">
-            {{ trim($post->content) }}
-        </div>
+  <div class="text-sm text-gray-700 whitespace-pre-line mb-3">
+    {{ $post->content }}
+</div>
 
         {{-- 画像 --}}
         @if ($post->image)
