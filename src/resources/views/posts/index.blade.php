@@ -91,9 +91,7 @@
 </p>
 
 {{-- 本文 --}}
-<div class="text-sm text-gray-700 whitespace-pre-wrap">
-    {{ $post->content }}
-</div>
+<div class="text-sm text-gray-700 whitespace-pre-wrap">{{ $post->content }}</div>
 
     {{-- 画像 --}}
     @if ($post->image)

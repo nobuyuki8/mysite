@@ -102,7 +102,8 @@
            style="display:inline-block;
                   padding:8px 16px;
                   background:#4f46e5;
-                  color:#000;
+                  color:#FFF;
+                  font-weight:bold;
                   border-radius:6px;">
             出品者にメッセージを送る
         </a>
