@@ -72,23 +72,28 @@
         </a>
     </h3>
 
-    {{-- 投稿者 --}}
-    <p class="text-sm text-gray-800 font-semibold mb-2">
-        👤 投稿者：
-        @if($post->user)
-            <a href="{{ route('users.show', $post->user) }}"
-               class="text-blue-600 hover:underline">
-                {{ $post->user->name }}
-            </a>
-        @else
-            不明
-        @endif
-    </p>
+   {{-- 投稿者 --}}
+<p class="text-sm text-gray-800 font-semibold mb-2">
+    👤 投稿者：
+    @if($post->user)
+        <a href="{{ route('users.show', $post->user) }}"
+           class="text-blue-600 hover:underline">
+            {{ $post->user->name }}
+        </a>
+    @else
+        不明
+    @endif
+</p>
 
-    {{-- 本文 --}}
-    <div class="text-sm text-gray-700 whitespace-pre-wrap">
-        {{ $post->content }}
-    </div>
+{{-- ★ここに追加する★ --}}
+<p class="text-xs text-gray-500 mb-2">
+    🕒 {{ $post->created_at?->format('Y年m月d日 H:i') }}
+</p>
+
+{{-- 本文 --}}
+<div class="text-sm text-gray-700 whitespace-pre-wrap">
+    {{ $post->content }}
+</div>
 
     {{-- 画像 --}}
     @if ($post->image)
@@ -121,7 +126,7 @@
 
 
             {{ $posts->withQueryString()->links() }}
-        </div>
+        </div>a
     </div>
 </div>
 
