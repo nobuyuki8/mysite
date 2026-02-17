@@ -74,10 +74,11 @@
         <div class="flex items-center gap-4 text-sm text-gray-600 mb-3">
 
             <div>
-    投稿者：
+<div class="flex items-center gap-1">
+    <span>投稿者：</span>
     @if($post->user)
         <a href="{{ route('users.show', $post->user) }}"
-           class="text-blue-600 hover:underline"
+           class="text-blue-600 hover:underline inline"
            onclick="event.stopPropagation();">
             {{ $post->user->name }}
         </a>
@@ -85,6 +86,7 @@
         不明
     @endif
 </div>
+
 
 
             <div>
