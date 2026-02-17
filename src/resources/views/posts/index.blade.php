@@ -70,31 +70,29 @@
             {{ $post->title ?? '（タイトルなし）' }}
         </h3>
 
-        {{-- 投稿者＋日時を横並び --}}
-        <div class="flex items-center gap-4 text-sm text-gray-600 mb-3">
+       {{-- 投稿者＋日時を横並び --}}
+<div class="flex items-center gap-4 text-sm text-gray-600 mb-3">
 
-            <div>
-<div class="flex items-center gap-1">
-    <span>投稿者：</span>
-    @if($post->user)
-        <a href="{{ route('users.show', $post->user) }}"
-           class="text-blue-600 hover:underline inline"
-           onclick="event.stopPropagation();">
-            {{ $post->user->name }}
-        </a>
-    @else
-        不明
-    @endif
+    {{-- 投稿者 --}}
+    <div class="flex items-center gap-1">
+        <span>投稿者：</span>
+        @if($post->user)
+            <a href="{{ route('users.show', $post->user) }}"
+               class="text-blue-600 hover:underline inline"
+               onclick="event.stopPropagation();">
+                {{ $post->user->name }}
+            </a>
+        @else
+            不明
+        @endif
+    </div>
+
+    {{-- 投稿日時 --}}
+    <div>
+        🕒 {{ $post->created_at?->format('Y年m月d日 H:i') }}
+    </div>
+
 </div>
-
-
-
-            <div>
-                🕒 {{ $post->created_at?->format('Y年m月d日 H:i') }}
-            </div>
-
-        </div>
-
         {{-- 本文 --}}
   <div class="text-sm text-gray-700 whitespace-pre-line mb-3">
     {{ $post->content }}
