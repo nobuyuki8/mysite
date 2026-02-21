@@ -94,8 +94,8 @@
 
 </div>
         {{-- 本文 --}}
-  <div class="text-sm text-gray-700 whitespace-pre-line mb-3">
-    {{ $post->content }}
+<div class="text-sm text-gray-700 mb-3">
+    {!! nl2br(e($post->content)) !!}
 </div>
 
         {{-- 画像 --}}
