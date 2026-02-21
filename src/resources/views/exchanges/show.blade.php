@@ -1,9 +1,9 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">
-            チャットルーム
-        </h2>
-    </x-slot>
+<x-slot name="header">
+    <h2 class="font-semibold text-xl text-gray-800">
+        {{ $exchange->title }}
+    </h2>
+</x-slot>
 
     <div class="max-w-3xl mx-auto py-6">
 
@@ -43,10 +43,7 @@
                     <span class="font-semibold">エリア:</span>
                     {{ $exchange->area ?? '未設定' }}
                 </div>
-                <div>
-                    <span class="font-semibold">ステータス:</span>
-                    {{ $exchange->status }}
-                </div>
+
             </div>
         </div>
 
