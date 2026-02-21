@@ -84,7 +84,9 @@ class ExchangeController extends Controller
             abort(403);
         }
 
-        $room = $exchange->room;
+       $room = Room::firstOrCreate([
+    'exchange_id' => $exchange->id,
+]);
 
         $messages = collect();
         if ($room) {
