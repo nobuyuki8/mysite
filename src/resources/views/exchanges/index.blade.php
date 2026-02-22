@@ -65,11 +65,12 @@
                     {{ $exchange->area ?? '未設定' }}
                 </p>
 
-                <!-- @if(!empty($exchange->description))
-                    <p class="mt-2 text-gray-700">
-                        {{ $exchange->description }}
-                    </p>
-                @endif -->
+
+@if(!empty($exchange->description))
+    <p class="mt-2 text-gray-700 whitespace-pre-line">
+        {{ $exchange->description }}
+    </p>
+@endif
 
                 {{-- 画像 --}}
                 @if(!empty($exchange->image_path))
@@ -82,17 +83,6 @@
                     </div>
                 @endif
 
-<!-- {{-- ステータス（pending は表示しない） --}}
-@if($exchange->status !== 'pending')
-    <div class="mt-3">
-        <span class="inline-block px-2 py-1 text-xs rounded
-            @if($exchange->status === 'accepted') bg-green-100 text-green-800
-            @elseif($exchange->status === 'rejected') bg-red-100 text-red-800
-            @endif">
-            {{ ucfirst($exchange->status) }}
-        </span>
-    </div>
-@endif -->
 
 
 {{-- チャット --}}
