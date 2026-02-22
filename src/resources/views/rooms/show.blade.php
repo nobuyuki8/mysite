@@ -10,9 +10,7 @@
         {{-- 交換情報 --}}
         <div class="bg-white shadow rounded p-4 mb-4">
             <h3 class="font-bold text-lg mb-2">{{ $exchange->title }}</h3>
-            <p class="text-gray-700 text-sm whitespace-pre-wrap">
-                {{ $exchange->description }}
-            </p>
+<p class="text-gray-700 text-sm whitespace-pre-line">{{ trim($exchange->description) }}</p>
 
             <!-- <p class="text-xs text-gray-500 mt-2">
                 ステータス：{{ $exchange->status }}
@@ -40,9 +38,7 @@
                                 ? 'bg-blue-500 text-white'
                                 : 'bg-white text-gray-800' }} "
                         >
-                            <p class="text-sm whitespace-pre-wrap">
-                                {{ $msg->message }}
-                            </p>
+<p class="text-sm whitespace-pre-line">{{ trim($msg->message) }}</p>
 
                             <div class="flex justify-between items-center mt-2">
                                 {{-- タイムスタンプを日本時間に --}}
