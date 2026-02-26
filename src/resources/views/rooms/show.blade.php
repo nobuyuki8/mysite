@@ -38,7 +38,9 @@
                                 ? 'bg-blue-500 text-white'
                                 : 'bg-white text-gray-800' }} "
                         >
-<p class="text-sm whitespace-pre-line">{{ trim($msg->message) }}</p>
+<p class="text-sm whitespace-pre-wrap">
+    {{ $msg->message }}
+</p>
 
                             <div class="flex justify-between items-center mt-2">
                                 {{-- タイムスタンプを日本時間に --}}
@@ -77,29 +79,29 @@
         {{-- 送信フォーム：ログインユーザーのみ --}}
         @auth
             <form
-                method="POST"
-                action="{{ route('rooms.send', $room->id) }}"
-                class="flex items-center gap-2"
-            >
-                @csrf
+    method="POST"
+    action="{{ route('rooms.send', $room->id) }}"
+    class="flex items-end gap-2"
+>
+    @csrf
 
-                <input
-                    type="text"
-                    name="message"
-                    placeholder="メッセージを入力"
-                    required
-                    class="flex-1 h-10 border rounded px-4 text-sm
-                           focus:outline-none focus:ring focus:border-blue-300"
-                >
+    <textarea
+        name="message"
+        rows="3"
+        placeholder="メッセージを入力"
+        required
+        class="flex-1 border rounded px-4 py-2 text-sm
+               focus:outline-none focus:ring focus:border-blue-300 resize-none"
+    ></textarea>
 
-                <button
-                    type="submit"
-                    class="h-10 px-5 bg-gray-700 text-white text-sm rounded
-                           hover:bg-gray-800"
-                >
-                    送信
-                </button>
-            </form>
+    <button
+        type="submit"
+        class="h-10 px-5 bg-gray-700 text-white text-sm rounded
+               hover:bg-gray-800"
+    >
+        送信
+    </button>
+</form>
         @else
             <p class="text-center text-sm text-gray-500">
                 メッセージを送信するにはログインしてください。
