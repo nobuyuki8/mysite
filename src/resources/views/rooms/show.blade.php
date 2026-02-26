@@ -38,9 +38,7 @@
                                 ? 'bg-blue-500 text-white'
                                 : 'bg-white text-gray-800' }} "
                         >
-<p class="text-sm whitespace-pre-wrap">
-    {{ $msg->message }}
-</p>
+<p class="text-sm whitespace-pre-wrap">{{ $msg->message }}</p>
 
                             <div class="flex justify-between items-center mt-2">
                                 {{-- タイムスタンプを日本時間に --}}
