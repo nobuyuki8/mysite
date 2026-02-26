@@ -20,7 +20,7 @@
         {{-- メッセージ一覧 --}}
         <div
             id="chat-box"
-            class="bg-gray-100 p-4 rounded mb-4 h-96 overflow-y-auto space-y-6"
+            class="bg-gray-100 p-4 rounded mb-4 h-96 overflow-y-auto space-y-2"
         >
             @forelse ($messages as $msg)
                 <div class="flex {{ $msg->user_id === auth()->id() ? 'justify-end' : 'justify-start' }}">
