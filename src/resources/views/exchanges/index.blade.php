@@ -1,23 +1,23 @@
 <x-app-layout>
 
-<x-slot name="nav">
+<div class="py-12">
+    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
 
+        {{-- パンくず --}}
+        <nav class="text-sm text-gray-500 mb-2">
+            <a href="{{ route('dashboard') }}" class="hover:text-blue-600">
+                ホーム
+            </a>
+            <span class="mx-2">＞</span>
+            <a href="{{ route('exchanges.index') }}" class="hover:text-blue-600">
+                物々交換
+            </a>
+        </nav>
 
-    {{-- パンくず --}}
-    <nav class="text-sm text-gray-500 mb-2">
-        <a href="{{ route('dashboard') }}" class="hover:text-blue-600">
-            ホーム
-        </a>
-        <span class="mx-2">＞</span>
-        <a href="{{ route('exchanges.index') }}" class="hover:text-blue-600">
-            物々交換
-        </a>
-    </nav>
-
-    {{-- ページタイトル --}}
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        物々交換 一覧
-    </h2>
+        {{-- ページタイトル --}}
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-6">
+            物々交換 一覧
+        </h2>
 
 </x-slot>
 
