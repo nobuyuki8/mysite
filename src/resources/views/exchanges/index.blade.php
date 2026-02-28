@@ -3,16 +3,16 @@
 <div class="py-12">
     <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
 
-        {{-- パンくず --}}
-        <nav class="text-sm text-gray-500 mb-2">
-            <a href="{{ route('dashboard') }}" class="hover:text-blue-600">
-                ホーム
-            </a>
-            <span class="mx-2">＞</span>
-            <a href="{{ route('exchanges.index') }}" class="hover:text-blue-600">
-                物々交換
-            </a>
-        </nav>
+{{-- パンくず（安全版） --}}
+<nav class="text-sm text-gray-700 mb-2">
+    <a href="{{ route('dashboard') ?? '#' }}" class="hover:text-blue-600 font-medium">
+        ホーム
+    </a>
+    <span class="mx-2">＞</span>
+    <a href="{{ route('exchanges.index') ?? '#' }}" class="hover:text-blue-600 font-medium">
+        物々交換
+    </a>
+</nav>
 
         {{-- ページタイトル --}}
         <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-6">
@@ -58,11 +58,18 @@
                     </span>
                 </div>
 
-                {{-- 出品者 --}}
-                <p class="mb-1">
-                    <strong>出品者:</strong>
-                    {{ $exchange->proposer?->name ?? '不明' }}
-                </p>
+{{-- 出品者 --}}
+<p class="mb-1">
+    <strong>出品者:</strong>
+    @if($exchange->proposer)
+        <a href="{{ route('users.show', $exchange->proposer->id) }}"
+           class="text-blue-600 hover:underline">
+            {{ $exchange->proposer->name }}
+        </a>
+    @else
+        不明
+    @endif
+</p>
 
                 {{-- 内容 --}}
                 <p class="mb-1">
