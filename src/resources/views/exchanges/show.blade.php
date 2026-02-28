@@ -22,9 +22,9 @@
                 </div>
             @endif
 
-            <p class="text-gray-700 mb-3">
-                {{ $exchange->description }}
-            </p>
+<p class="text-gray-700 mb-3 whitespace-pre-line">
+    {{ $exchange->description }}
+</p>
 
             <div class="text-sm text-gray-600 space-y-1">
                 <div>
@@ -67,9 +67,9 @@
                                 {{ $msg->sender?->name ?? '不明なユーザー' }}
                             </strong>
 
-                            <p class="text-sm whitespace-pre-wrap">
-                                {{ $msg->message }}
-                            </p>
+<p class="text-sm whitespace-pre-line">
+    {{ $msg->message }}
+</p>
 
                             <small class="block text-right text-xs text-gray-400 mt-1">
                                 {{ $msg->created_at->format('Y/m/d H:i') }}
