@@ -19,11 +19,6 @@
             物々交換 一覧
         </h2>
 
-</x-slot>
-
-<div class="py-12">
-    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-
         {{-- フラッシュメッセージ --}}
         @if(session('status'))
             <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">
@@ -36,6 +31,8 @@
                 {{ session('success') }}
             </div>
         @endif
+
+        {{-- ここから下はそのままでOK --}}
 
         {{-- 新規交換投稿 --}}
         @auth
