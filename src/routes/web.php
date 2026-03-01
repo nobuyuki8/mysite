@@ -35,7 +35,7 @@ Route::get('/users/{user}', [UserController::class, 'show'])
     ->name('users.show');
 
 // ========================================
-// 物々交換（公開）
+// 物々交換（一覧は公開）
 // ========================================
 
 Route::get('/exchanges', [ExchangeController::class, 'index'])
@@ -45,9 +45,11 @@ Route::get('/exchanges/{exchange}', [ExchangeController::class, 'show'])
     ->whereNumber('exchange')
     ->name('exchanges.show');
 
+
 // ========================================
 // 認証必須
 // ========================================
+
 Route::middleware(['auth'])->group(function () {
 
     // ------------------------------------
@@ -72,7 +74,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('posts.destroy');
 
     // ------------------------------------
-    // ★ いいね（確定版）
+    // いいね
     // ------------------------------------
     Route::post('/posts/{post}/like', [LikeController::class, 'toggle'])
         ->whereNumber('post')
@@ -90,7 +92,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('comments.destroy');
 
     // ------------------------------------
-    // 物々交換（ログイン必須）
+    // 物々交換
     // ------------------------------------
     Route::get('/exchanges/create', [ExchangeController::class, 'create'])
         ->name('exchanges.create');
@@ -110,12 +112,21 @@ Route::middleware(['auth'])->group(function () {
         ->whereNumber('exchange')
         ->name('exchanges.destroy');
 
+    // 承諾・拒否
     Route::post(
         '/exchanges/{exchange}/status/{status}',
         [ExchangeController::class, 'updateStatus']
     )
         ->whereNumber('exchange')
         ->name('exchanges.updateStatus');
+
+    // ★ 取引完了（追加）
+    Route::post(
+        '/exchanges/{exchange}/complete',
+        [ExchangeController::class, 'complete']
+    )
+        ->whereNumber('exchange')
+        ->name('exchanges.complete');
 
     // ------------------------------------
     // チャット

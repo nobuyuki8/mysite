@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Exchange;
 use App\Models\Room;
-use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -49,6 +48,7 @@ class ExchangeController extends Controller
         ]);
 
         $imagePath = null;
+
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('exchanges', 'public');
         }
@@ -76,7 +76,6 @@ class ExchangeController extends Controller
      */
     public function show(Exchange $exchange): View
     {
-        // 出品者 or 承諾者のみ閲覧可
         if (
             Auth::id() !== $exchange->proposer_user_id &&
             Auth::id() !== $exchange->receiver_user_id
@@ -84,17 +83,14 @@ class ExchangeController extends Controller
             abort(403);
         }
 
-       $room = Room::firstOrCreate([
-    'exchange_id' => $exchange->id,
-]);
+        $room = Room::firstOrCreate([
+            'exchange_id' => $exchange->id,
+        ]);
 
-        $messages = collect();
-        if ($room) {
-            $messages = $room->messages()
-                ->with('user')
-                ->orderBy('created_at', 'asc')
-                ->get();
-        }
+        $messages = $room->messages()
+            ->with('user')
+            ->orderBy('created_at', 'asc')
+            ->get();
 
         return view('exchanges.show', [
             'exchange' => $exchange,
@@ -124,6 +120,11 @@ class ExchangeController extends Controller
             abort(403);
         }
 
+        // 完了済みは編集不可
+        if ($exchange->status === 'completed') {
+            return back()->with('error', '完了済みの取引は編集できません');
+        }
+
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:100'],
             'description' => ['required', 'string', 'max:500'],
@@ -134,6 +135,7 @@ class ExchangeController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
+
             if ($exchange->image_path) {
                 Storage::disk('public')->delete($exchange->image_path);
             }
@@ -170,14 +172,13 @@ class ExchangeController extends Controller
     }
 
     /**
-     * 承諾・拒否（★最重要）
+     * 承諾・拒否
      */
     public function updateStatus(
         Exchange $exchange,
         string $status
     ): RedirectResponse {
 
-        // 投稿者は操作不可
         if ($exchange->proposer_user_id === Auth::id()) {
             abort(403);
         }
@@ -186,25 +187,26 @@ class ExchangeController extends Controller
             abort(400);
         }
 
+        // 完了済みは変更不可
+        if ($exchange->status === 'completed') {
+            return back()->with('error', '完了済みの取引は変更できません');
+        }
+
         DB::transaction(function () use ($exchange, $status) {
 
             if ($status === 'accepted') {
 
-                // ① exchange 更新
                 $exchange->update([
                     'receiver_user_id' => Auth::id(),
                     'status' => 'accepted',
                 ]);
 
-                // ★ 超重要：最新状態を取得
                 $exchange->refresh();
 
-                // ② room 作成 or 取得
                 $room = Room::firstOrCreate([
                     'exchange_id' => $exchange->id,
                 ]);
 
-                // ③ proposer + receiver を確実に登録
                 $userIds = array_filter([
                     $exchange->proposer_user_id,
                     $exchange->receiver_user_id,
@@ -218,8 +220,30 @@ class ExchangeController extends Controller
             }
         });
 
-        return redirect()
-            ->back()
-            ->with('status', "交換を「{$status}」しました");
+        return back()->with('status', "交換を「{$status}」しました");
+    }
+
+    /**
+     * ★ 取引完了（追加部分）
+     */
+    public function complete(Exchange $exchange): RedirectResponse
+    {
+        if (
+            Auth::id() !== $exchange->proposer_user_id &&
+            Auth::id() !== $exchange->receiver_user_id
+        ) {
+            abort(403);
+        }
+
+        if ($exchange->status !== 'accepted') {
+            return back()->with('error', 'この取引は完了できません');
+        }
+
+        $exchange->update([
+            'status' => 'completed',
+            'completed_at' => now(),
+        ]);
+
+        return back()->with('status', '取引を完了しました');
     }
 }
