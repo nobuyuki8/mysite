@@ -2,14 +2,15 @@
 <div class="pt-2 pb-6">
 
     <!-- 🔹 パンくず & タイトル -->
-<nav class="text-sm text-gray-700 mb-1">
+<nav class="text-sm text-gray-700 mb-1 -mt-2">
     <a href="{{ url('/') }}" class="text-blue-600 hover:underline">
         ホーム
     </a>
     <span class="mx-1 text-gray-400">＞</span>
-    <a href="{{ url('/') }}" class="text-blue-600 hover:underline">
-        物々交換
-    </a>
+<a href="{{ route('exchanges.index') }}"
+   class="text-blue-600 hover:underline">
+    物々交換
+</a>
 </nav>
 
         <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-4">
