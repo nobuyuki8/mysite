@@ -1,23 +1,20 @@
 <x-app-layout>
 
-<div class="py-6"> <!-- 12 → 6 に -->
-    <div class="max-w-4xl ml-6 mx-auto px-4 sm:px-6 lg:px-8">
+<div class="py-6">
 
-        {{-- パンくず： --}}
+    <!-- ★ パンくずとタイトルは外に出す -->
+    <div class="max-w-4xl mx-auto">
         <nav class="text-sm text-gray-700 mb-1">
-            <a href="{{ route('dashboard') ?? '#' }}" class="hover:text-blue-600 font-medium">
-                ホーム
-            </a>
-            <span class="mx-2">＞</span>
-            <a href="{{ route('exchanges.index') ?? '#' }}" class="hover:text-blue-600 font-medium">
-                物々交換
-            </a>
+            ...
         </nav>
 
-        {{-- ページタイトル： --}}
         <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-4">
             物々交換 一覧
         </h2>
+    </div>
+
+    <!-- ★ 投稿部分だけ padding をつける -->
+    <div class="px-4 sm:px-6 lg:px-8">
 
         {{-- フラッシュメッセージ --}}
         @if(session('status'))
