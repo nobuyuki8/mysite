@@ -1,10 +1,10 @@
 <x-app-layout>
 
-<div class="py-12">
-    <div class="max-w-7xl ml-0 sm:px-6 lg:px-12"> 
+<div class="py-6"> <!-- 12 → 6 に -->
+    <div class="max-w-4xl ml-6 mr-auto px-4 sm:px-6 lg:px-8">
 
         {{-- パンくず： --}}
-        <nav class="text-sm text-gray-700 mb-2">
+        <nav class="text-sm text-gray-700 mb-1">
             <a href="{{ route('dashboard') ?? '#' }}" class="hover:text-blue-600 font-medium">
                 ホーム
             </a>
@@ -15,7 +15,7 @@
         </nav>
 
         {{-- ページタイトル： --}}
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-6">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-4">
             物々交換 一覧
         </h2>
 
