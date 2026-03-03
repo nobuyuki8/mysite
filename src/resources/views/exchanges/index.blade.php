@@ -1,25 +1,30 @@
 <x-app-layout>
-<div class="pt-2 pb-6">
 
-    <!-- 🔹 パンくず & タイトル -->
-<nav class="text-sm text-gray-700 mb-1 -mt-2">
-    <a href="{{ url('/') }}" class="text-blue-600 hover:underline">
-        ホーム
-    </a>
-    <span class="mx-1 text-gray-400">＞</span>
-<a href="{{ route('exchanges.index') }}"
-   class="text-blue-600 hover:underline">
-    物々交換
-</a>
-</nav>
-
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-4">
-            物々交換 一覧
-        </h2>
+    <!-- 🔹 パンくず（余白なし） -->
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pt-1">
+        <nav class="text-sm text-gray-700">
+            <a href="{{ url('/') }}" class="text-blue-600 hover:underline">
+                ホーム
+            </a>
+            <span class="mx-1 text-gray-400">＞</span>
+            <a href="{{ url('/exchanges') }}" class="text-blue-600 hover:underline">
+                物々交換
+            </a>
+        </nav>
     </div>
 
-    <!-- 🔹 投稿部分（今まで通り中央） -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- 🔹 タイトル & 投稿 -->
+    <div class="py-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-4">
+                物々交換 一覧
+            </h2>
+
+        </div>
+
+        <!-- 投稿部分 -->
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {{-- フラッシュメッセージ --}}
         @if(session('status'))
