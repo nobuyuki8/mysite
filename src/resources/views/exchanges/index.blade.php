@@ -1,11 +1,10 @@
 <x-app-layout>
-
 <div class="py-6">
 
-    <!-- ★ パンくずとタイトルは外に出す -->
-    <div class="max-w-4xl mx-auto">
+    <!-- 🔹 パンくず & タイトル -->
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <nav class="text-sm text-gray-700 mb-1">
-            ...
+            ホーム ＞ 物々交換
         </nav>
 
         <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-4">
@@ -13,8 +12,8 @@
         </h2>
     </div>
 
-    <!-- ★ 投稿部分だけ padding をつける -->
-    <div class="px-4 sm:px-6 lg:px-8">
+    <!-- 🔹 投稿部分（今まで通り中央） -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {{-- フラッシュメッセージ --}}
         @if(session('status'))
