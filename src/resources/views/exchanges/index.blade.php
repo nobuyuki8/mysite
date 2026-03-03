@@ -1,11 +1,14 @@
 <x-app-layout>
-<div class="py-6">
+<div class="pt-2 pb-6">
 
     <!-- 🔹 パンくず & タイトル -->
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <nav class="text-sm text-gray-700 mb-1">
-            ホーム ＞ 物々交換
-        </nav>
+<nav class="text-sm text-gray-700 mb-1">
+    <a href="{{ route('dashboard') }}" class="text-blue-600 hover:underline">
+        ホーム
+    </a>
+    <span class="mx-1">＞</span>
+    <span>物々交換</span>
+</nav>
 
         <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-4">
             物々交換 一覧
