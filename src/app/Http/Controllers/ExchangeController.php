@@ -67,7 +67,7 @@ class ExchangeController extends Controller
         ]);
 
         return redirect()
-            ->route('exchanges.show', $exchange)
+            ->route('exchanges.index')
             ->with('status', '物々交換の投稿が完了しました！');
     }
 

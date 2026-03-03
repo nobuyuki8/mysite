@@ -1,7 +1,7 @@
 <x-app-layout>
 
 <div class="py-6"> <!-- 12 → 6 に -->
-    <div class="max-w-4xl ml-6 mr-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl ml-6 mx-auto px-4 sm:px-6 lg:px-8">
 
         {{-- パンくず： --}}
         <nav class="text-sm text-gray-700 mb-1">
