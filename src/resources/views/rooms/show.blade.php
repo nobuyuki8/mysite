@@ -7,6 +7,12 @@
 
 <div class="max-w-3xl mx-auto mt-6 px-3">
 
+@if(session('status'))
+<div class="bg-green-100 text-green-800 p-3 rounded mb-4">
+    {{ session('status') }}
+</div>
+@endif
+
     {{-- 交換情報 --}}
     <div class="bg-white shadow rounded p-4 mb-4">
 
