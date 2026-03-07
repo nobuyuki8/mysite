@@ -15,11 +15,11 @@
     @endif
 
     {{-- 交換内容 --}}
-    <div class="bg-white shadow-md p-4 rounded mb-4">
-        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded font-bold text-center">
-        この取引は終了しました
-    </div>
-    @endif
+@if($exchange->status === 'completed')
+<div class="mb-4 p-3 bg-red-100 text-red-700 rounded font-bold text-center">
+    この取引は終了しました
+</div>
+@endif
 
         <h3 class="text-xl font-bold mb-2">{{ $exchange->title }}</h3>
 
