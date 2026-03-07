@@ -16,18 +16,21 @@
 
     {{-- 交換内容 --}}
     <div class="bg-white shadow-md p-4 rounded mb-4">
+        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded font-bold text-center">
+        この取引は終了しました
+    </div>
+    @endif
+
         <h3 class="text-xl font-bold mb-2">{{ $exchange->title }}</h3>
 
         {{-- ステータス表示 --}}
         <div class="mb-3">
             <span class="font-semibold">状態:</span>
-            @if($exchange->status === 'completed')
-                <span class="text-green-600 font-bold">取引完了</span>
-            @elseif($exchange->status === 'accepted')
-                <span class="text-blue-600 font-bold">取引中</span>
-            @else
-                <span class="text-gray-600">募集中</span>
-            @endif
+@if($exchange->status === 'completed')
+    <span class="text-green-600 font-bold">取引完了</span>
+@else
+    <span class="text-blue-600 font-bold">募集中</span>
+@endif
         </div>
 
         {{-- 画像 --}}

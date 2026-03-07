@@ -76,12 +76,6 @@ class ExchangeController extends Controller
      */
     public function show(Exchange $exchange): View
     {
-        if (
-            Auth::id() !== $exchange->proposer_user_id &&
-            Auth::id() !== $exchange->receiver_user_id
-        ) {
-            abort(403);
-        }
 
         $room = Room::firstOrCreate([
             'exchange_id' => $exchange->id,
