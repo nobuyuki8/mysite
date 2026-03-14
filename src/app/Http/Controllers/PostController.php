@@ -19,12 +19,12 @@ class PostController extends Controller
         $query = Post::with(['user', 'tags', 'likers']);
 
         // キーワード検索
-        if ($request->filled('keyword')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('title', 'like', "%{$request->keyword}%")
-                  ->orWhere('content', 'like', "%{$request->keyword}%");
-            });
-        }
+if ($request->filled('crop')) {
+    $query->where(function ($q) use ($request) {
+        $q->where('title', 'like', "%{$request->crop}%")
+          ->orWhere('content', 'like', "%{$request->crop}%");
+    });
+}
 
         // 23区
         $tokyo23 = [
