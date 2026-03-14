@@ -82,9 +82,9 @@
                         : 'bg-white text-gray-800' }}"
                 >
 
-                    <p class="text-sm whitespace-pre-wrap">
-                        {{ $msg->message }}
-                    </p>
+<p class="text-sm whitespace-pre-wrap">
+    {{ trim($msg->message) }}
+</p>
 
                     <div class="flex justify-between items-center mt-2">
 
