@@ -82,10 +82,9 @@
                         : 'bg-white text-gray-800' }}"
                 >
 
-<p class="text-sm whitespace-pre-wrap">
-    {{ trim($msg->message) }}
+<p class="text-sm whitespace-pre-line">
+{{ $msg->message }}
 </p>
-
                     <div class="flex justify-between items-center mt-2">
 
                         {{-- 時間 --}}
