@@ -34,6 +34,13 @@ class StorePostRequest extends FormRequest
                 'max:500',
             ],
 
+                    // ⭐追加
+        'area' => [
+            'required',
+            'string',
+            'max:50',
+        ],
+
             // 画像は任意、2MB以下
             'image' => [
                 'nullable',
@@ -61,6 +68,8 @@ class StorePostRequest extends FormRequest
 
             'content.required' => '投稿内容は必須です。',
             'content.max' => '投稿内容は500文字以内で入力してください。',
+
+             'area.required' => 'エリアを選択してください。', // ←追加
 
             'image.image' => '画像ファイルを選択してください。',
             'image.max' => '画像サイズは2MB以内にしてください。',

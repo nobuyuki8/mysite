@@ -36,14 +36,13 @@ class PostController extends Controller
         if ($request->filled('area')) {
             $area = $request->area;
 
-            if ($area === 'tokyo23') {
-                $query->whereHas('user', fn ($q) => $q->whereIn('area', $tokyo23));
-            } elseif ($area === 'outside23') {
-                $query->whereHas('user', fn ($q) => $q->whereNotIn('area', $tokyo23));
-            } else {
-                $query->whereHas('user', fn ($q) => $q->where('area', $area));
-            }
-        }
+if ($area === 'tokyo23') {
+    $query->whereIn('area', $tokyo23);
+} elseif ($area === 'outside23') {
+    $query->whereNotIn('area', $tokyo23);
+} else {
+    $query->where('area', $area);
+}
 
         // タグ検索
         if ($request->filled('tag')) {
@@ -96,6 +95,7 @@ class PostController extends Controller
             'title'   => $validated['title'],
             'content' => $validated['content'],
             'image'   => $imagePath,
+            'area'    => $validated['area'],   // ← これ追加
         ]);
 
         // タグ処理
