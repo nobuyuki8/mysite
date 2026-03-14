@@ -142,15 +142,8 @@
         >
 
             @csrf
+<textarea name="message" rows="3" placeholder="メッセージを入力" required class="flex-1 border rounded px-4 py-2 text-sm focus:outline-none focus:ring focus:border-blue-300 resize-none"></textarea>
 
-            <textarea
-                name="message"
-                rows="3"
-                placeholder="メッセージを入力"
-                required
-                class="flex-1 border rounded px-4 py-2 text-sm
-                       focus:outline-none focus:ring focus:border-blue-300 resize-none"
-            ></textarea>
 
             <button
                 type="submit"
