@@ -84,7 +84,7 @@ class RoomController extends Controller
             'room_id'        => $room->id,
             'user_id'        => Auth::id(),
             'sender_user_id' => Auth::id(),
-            'message'        => $request->message,
+            'message'        =>trim($request->message),
         ]);
 
         return back();
