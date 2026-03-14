@@ -80,12 +80,12 @@ class RoomController extends Controller
         /**
          * メッセージ保存
          */
-        Message::create([
-            'room_id'        => $room->id,
-            'user_id'        => Auth::id(),
-            'sender_user_id' => Auth::id(),
-            'message'        =>trim($request->message),
-        ]);
+Message::create([
+    'room_id'        => $room->id,
+    'user_id'        => Auth::id(),
+    'sender_user_id' => Auth::id(),
+    'message'        => preg_replace('/^\s+/u', '', $request->message),
+]);
 
         return back();
     }
