@@ -43,6 +43,7 @@ if ($area === 'tokyo23') {
 } else {
     $query->where('area', $area);
 }
+        }
 
         // タグ検索
         if ($request->filled('tag')) {
