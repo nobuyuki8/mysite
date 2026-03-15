@@ -21,7 +21,10 @@ use App\Http\Controllers\LikeController;
 // ========================================
 
 // トップページ（投稿一覧）
-Route::get('/', [PostController::class, 'index'])
+Route::get('/', [PostController::class, 'index']);
+
+    // 投稿一覧（タグ検索用）
+Route::get('/posts', [PostController::class, 'index'])
     ->name('posts.index');
 
 // 投稿詳細

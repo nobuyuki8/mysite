@@ -34,9 +34,10 @@
             {{-- タグ --}}
             <div class="mb-4">
                 @foreach ($post->tags as $tag)
-                    <a href="/posts?tag={{ $tag->name }}" class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm mr-2">
-                        #{{ $tag->name }}
-             </a>
+   <a href="{{ route('posts.index', ['tag' => $tag->name]) }}"
+   class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm mr-2">
+    #{{ $tag->name }}
+</a>
                 @endforeach
             </div>
 
